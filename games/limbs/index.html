@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Руки-ноги — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    #stage {
+      padding-top: 3.4rem;
+    }
+
+    .quad .limb {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      transform: scale(1.85);
+      transform-origin: center center;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage" id="stage">
+      <div class="quads quads--carpet" id="quads">
+        <div class="quad"></div>
+        <div class="quad"></div>
+        <div class="quad"></div>
+        <div class="quad"></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const ASSETS = {
+      hand: {
+        left: '../../assets/hands/hand-left.svg',
+        right: '../../assets/hands/hand-right.svg',
+      },
+      foot: {
+        left: '../../assets/feet/foot-left.svg',
+        right: '../../assets/feet/foot-right.svg',
+      },
+    };
+
+    const stage = document.getElementById('stage');
+    const quads = Array.from(document.querySelectorAll('.quad'));
+    const WHITE = '#ffffff';
+
+    function pickLimbPair() {
+      const mode = randomItem(['hands', 'feet', 'mixed']);
+      if (mode === 'hands') {
+        const sides = shuffle(['left', 'right']);
+        return [
+          { kind: 'hand', side: sides[0] },
+          { kind: 'hand', side: sides[1] },
+        ];
+      }
+      if (mode === 'feet') {
+        const sides = shuffle(['left', 'right']);
+        return [
+          { kind: 'foot', side: sides[0] },
+          { kind: 'foot', side: sides[1] },
+        ];
+      }
+      return [
+        { kind: 'hand', side: randomItem(['left', 'right']) },
+        { kind: 'foot', side: randomItem(['left', 'right']) },
+      ];
+    }
+
+    function tick(silent) {
+      triggerChangeAnimation(stage, silent);
+      quads.forEach(function (quad) {
+        quad.innerHTML = '';
+      });
+
+      const slots = shuffle([0, 1, 2, 3]);
+      pickLimbPair().forEach(function (limb, index) {
+        const el = document.createElement('div');
+        el.className = 'limb';
+        paintAsset(el, ASSETS[limb.kind][limb.side], WHITE, { pad: 0 });
+        quads[slots[index]].appendChild(el);
+      });
+    }
+
+    mountGameShell({
+      gameId: 'limbs',
+      titleKey: 'limbs',
+      tick: tick,
+      reset: function () {
+        quads.forEach(function (quad) {
+          quad.innerHTML = '';
+        });
+      },
+    });
+  </script>
+</body>
+</html>

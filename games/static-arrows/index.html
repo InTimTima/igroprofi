@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Статичные стрелочки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .arrows-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8%;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .arrow {
+      height: 72%;
+      width: auto;
+      aspect-ratio: 1;
+      max-width: 38%;
+      max-height: 72%;
+      overflow: visible;
+      transform-origin: center center;
+    }
+
+    #arrow-left {
+      transform: rotate(180deg);
+    }
+
+    #arrow-right {
+      transform: rotate(0deg);
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="arrows-wrap" id="arrows-wrap">
+        <div id="arrow-left" class="arrow art-shape"></div>
+        <div id="arrow-right" class="arrow art-shape"></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const ARROW_URL = '../../assets/arrows/arrow.svg';
+    const wrap = document.getElementById('arrows-wrap');
+    const left = document.getElementById('arrow-left');
+    const right = document.getElementById('arrow-right');
+    let unique = false;
+
+    function tick(silent) {
+      triggerChangeAnimation(wrap, silent);
+      const colors = pickColors(2, unique);
+      paintAsset(left, ARROW_URL, IGRO_COLORS[colors[0]]);
+      paintAsset(right, ARROW_URL, IGRO_COLORS[colors[1]]);
+    }
+
+    mountGameShell({
+      gameId: 'static-arrows',
+      titleKey: 'staticArrows',
+      tick: tick,
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'colorsSame',
+          rightKey: 'colorsDifferent',
+          checked: false,
+          onChange: function (checked) {
+            unique = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+    });
+  </script>
+</body>
+</html>

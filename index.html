@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Интерактивные игры от igroprofi</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="home">
+  <button type="button" class="lang-btn" id="lang-btn">EN</button>
+  <div class="page">
+    <header class="header">
+      <img class="header__logo" src="assets/logo/logo.svg" alt="igroprofi">
+      <h1 class="header__title" data-title-brand>Интерактивные игры от <span>igroprofi</span></h1>
+      <p class="header__subtitle" data-i18n="subtitle">Выберите интерактив для занятий и развития</p>
+    </header>
+
+    <main class="cards">
+      <a class="card" data-game="color" href="games/color/index.html">
+        <div class="card__preview">
+          <img src="assets/previews/color.svg" alt="">
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="color">Цвет</h2>
+          <p class="card__desc" data-i18n="colorDesc">Экран заливается одним из четырёх цветов. Фон меняется автоматически с настраиваемой скоростью.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="hands" href="games/hands/index.html">
+        <div class="card__preview card__preview--white">
+          <div class="preview-pair">
+            <span class="preview-mask preview-mask--hand-left"></span>
+            <span class="preview-mask preview-mask--hand-right"></span>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="hands">Ладошки</h2>
+          <p class="card__desc" data-i18n="handsDesc">На белом фоне появляются левые и правые ладошки разных цветов. Можно выбрать одну или две ладошки.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="arrows" href="games/arrows/index.html">
+        <div class="card__preview preview-arrows">
+          <span class="preview-arrow preview-arrow--up"></span>
+          <span class="preview-arrow preview-arrow--right"></span>
+          <span class="preview-arrow preview-arrow--down"></span>
+          <span class="preview-arrow preview-arrow--left"></span>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="arrows">Стрелочки</h2>
+          <p class="card__desc" data-i18n="arrowsDesc">Стрелка случайного направления и цвета появляется на экране. Есть режим двух стрелочек и только вправо-влево.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="halves" href="games/halves/index.html">
+        <div class="card__preview">
+          <img src="assets/previews/halves.svg" alt="">
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="halves">Половинки</h2>
+          <p class="card__desc" data-i18n="halvesDesc">Экран разделён пополам — каждая половина меняет цвет независимо друг от друга.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="quarters" href="games/quarters/index.html">
+        <div class="card__preview">
+          <div class="preview-quads preview-quads--gap">
+            <div class="preview-quad" style="background:#E53935"></div>
+            <div class="preview-quad" style="background:#FDD835"></div>
+            <div class="preview-quad" style="background:#43A047"></div>
+            <div class="preview-quad" style="background:#1E88E5"></div>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="quarters">Четвертинки</h2>
+          <p class="card__desc" data-i18n="quartersDesc">Экран разделён на четыре части, и каждая четверть меняет цвет.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="dice" href="games/dice/index.html">
+        <div class="card__preview card__preview--white">
+          <div class="preview-dice">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 90 90" overflow="visible">
+              <rect x="49.02" y="48.64" width="72.44" height="72.44" rx="10" ry="10" fill="currentColor"/>
+              <circle cx="103.4" cy="66.95" r="4.93" fill="#333"/>
+              <circle cx="67.07" cy="66.95" r="4.93" fill="#333"/>
+              <circle cx="103.4" cy="104.36" r="4.93" fill="#333"/>
+              <circle cx="67.07" cy="104.36" r="4.93" fill="#333"/>
+              <circle cx="85.24" cy="84.86" r="4.93" fill="#333"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="dice">Кубики</h2>
+          <p class="card__desc" data-i18n="diceDesc">На белом фоне появляется кубик с точками от 1 до 6 — каждый раз нового цвета.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="numbers" href="games/numbers/index.html">
+        <div class="card__preview preview-number-bg">
+          <span class="preview-number">3</span>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="numbers">Цифры</h2>
+          <p class="card__desc" data-i18n="numbersDesc">Цвет фона меняется, а поверх него появляются цифры от 1 до 5.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="carpet-numbers" href="games/carpet-numbers/index.html">
+        <div class="card__preview">
+          <div class="preview-quads preview-quads--gap">
+            <div class="preview-quad" style="background:#E53935"></div>
+            <div class="preview-quad" style="background:#FDD835"><span class="preview-num">7</span></div>
+            <div class="preview-quad" style="background:#43A047"></div>
+            <div class="preview-quad" style="background:#1E88E5"></div>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="carpetNumbers">Цифры на ковре</h2>
+          <p class="card__desc" data-i18n="carpetNumbersDesc">На стандартном ковре по очереди появляются цифры от 1 до 10 на случайных четвертях.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="heels" href="games/heels/index.html">
+        <div class="card__preview card__preview--white">
+          <div class="preview-pair">
+            <span class="preview-mask preview-mask--foot-left"></span>
+            <span class="preview-mask preview-mask--foot-right"></span>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="heels">Пятки</h2>
+          <p class="card__desc" data-i18n="heelsDesc">Как «Ладошки», только с пятками: цвет, сторона и места меняются при каждой смене.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="limbs" href="games/limbs/index.html">
+        <div class="card__preview">
+          <div class="preview-quads preview-quads--gap">
+            <div class="preview-quad" style="background:#E53935"><span class="preview-mask preview-mask--hand-left" style="background:#fff"></span></div>
+            <div class="preview-quad" style="background:#FDD835"></div>
+            <div class="preview-quad" style="background:#43A047"></div>
+            <div class="preview-quad" style="background:#1E88E5"><span class="preview-mask preview-mask--foot-right" style="background:#fff"></span></div>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="limbs">Руки-ноги</h2>
+          <p class="card__desc" data-i18n="limbsDesc">На стандартном ковре появляются две руки, две ноги или рука и нога — без двух одинаковых сторон.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="static-arrows" href="games/static-arrows/index.html">
+        <div class="card__preview preview-arrows">
+          <span class="preview-arrow preview-arrow--left"></span>
+          <span class="preview-arrow preview-arrow--right"></span>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="staticArrows">Статичные стрелочки</h2>
+          <p class="card__desc" data-i18n="staticArrowsDesc">Две стрелочки: левая всегда влево, правая всегда вправо. Меняются только цвета.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+    </main>
+  </div>
+  <script src="js/auth.js"></script>
+  <script src="js/shared.js"></script>
+  <script>
+    function refreshHome() {
+      applyI18n();
+      const langBtn = document.getElementById('lang-btn');
+      if (langBtn) langBtn.textContent = t('lang');
+      if (typeof refreshAuthTexts === 'function') refreshAuthTexts();
+      else if (typeof refreshHomeAuthUI === 'function') refreshHomeAuthUI();
+    }
+    document.getElementById('lang-btn').addEventListener('click', function () {
+      setLang(getLang() === 'en' ? 'ru' : 'en');
+      refreshHome();
+    });
+    refreshHome();
+    mountHomeAuth();
+  </script>
+</body>
+</html>

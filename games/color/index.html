@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Цвет — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    #stage {
+      width: 100%;
+      height: 100%;
+      transition: background-color 0.35s ease;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage" id="stage"></div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const stage = document.getElementById('stage');
+
+    function tick(silent) {
+      if (!silent) {
+        triggerChangeAnimation(stage);
+        stage.classList.remove('flash-bg');
+        void stage.offsetWidth;
+        stage.classList.add('flash-bg');
+      }
+      stage.style.backgroundColor = IGRO_COLORS[randomColorKey()];
+    }
+
+    mountGameShell({
+      gameId: 'color',
+      titleKey: 'color',
+      tick: tick,
+      reset: function () {
+        stage.style.backgroundColor = '#ffffff';
+      },
+    });
+  </script>
+</body>
+</html>

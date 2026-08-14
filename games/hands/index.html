@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ладошки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .hands-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4%;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .hand {
+      height: 86%;
+      width: auto;
+      aspect-ratio: 595 / 842;
+      max-width: 42%;
+      max-height: 86%;
+    }
+
+    .hands-container.dual .hand {
+      max-width: 36%;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="hands-container" id="hands-container">
+        <div class="hand limb art-shape" id="hand-a"></div>
+        <div class="hand limb art-shape" id="hand-b" hidden></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const ASSETS = {
+      left: '../../assets/hands/hand-left.svg',
+      right: '../../assets/hands/hand-right.svg',
+    };
+
+    const container = document.getElementById('hands-container');
+    const handA = document.getElementById('hand-a');
+    const handB = document.getElementById('hand-b');
+    let dualMode = false;
+
+    function tick(silent) {
+      triggerChangeAnimation(container, silent);
+
+      if (!dualMode) {
+        handB.hidden = true;
+        container.classList.remove('dual');
+        container.style.flexDirection = 'row';
+        paintAsset(handA, ASSETS[randomItem(['left', 'right'])], IGRO_COLORS[randomColorKey()]);
+        return;
+      }
+
+      handB.hidden = false;
+      container.classList.add('dual');
+      container.style.flexDirection = Math.random() < 0.5 ? 'row-reverse' : 'row';
+      paintAsset(handA, ASSETS.left, IGRO_COLORS[randomColorKey()]);
+      paintAsset(handB, ASSETS.right, IGRO_COLORS[randomColorKey()]);
+    }
+
+    mountGameShell({
+      gameId: 'hands',
+      titleKey: 'hands',
+      tick: tick,
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'oneHand',
+          rightKey: 'twoHands',
+          checked: false,
+          onChange: function (checked) {
+            dualMode = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пятки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .feet-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4%;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .foot {
+      height: 78%;
+      width: auto;
+      aspect-ratio: 1;
+      max-width: 42%;
+      max-height: 78%;
+    }
+
+    .feet-container.dual .foot {
+      max-width: 36%;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="feet-container" id="feet-container">
+        <div class="foot limb art-shape" id="foot-a"></div>
+        <div class="foot limb art-shape" id="foot-b" hidden></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const ASSETS = {
+      left: '../../assets/feet/foot-left.svg',
+      right: '../../assets/feet/foot-right.svg',
+    };
+
+    const container = document.getElementById('feet-container');
+    const footA = document.getElementById('foot-a');
+    const footB = document.getElementById('foot-b');
+    let dualMode = false;
+
+    function tick(silent) {
+      triggerChangeAnimation(container, silent);
+
+      if (!dualMode) {
+        footB.hidden = true;
+        container.classList.remove('dual');
+        container.style.flexDirection = 'row';
+        paintAsset(footA, ASSETS[randomItem(['left', 'right'])], IGRO_COLORS[randomColorKey()]);
+        return;
+      }
+
+      footB.hidden = false;
+      container.classList.add('dual');
+      container.style.flexDirection = Math.random() < 0.5 ? 'row-reverse' : 'row';
+      paintAsset(footA, ASSETS.left, IGRO_COLORS[randomColorKey()]);
+      paintAsset(footB, ASSETS.right, IGRO_COLORS[randomColorKey()]);
+    }
+
+    mountGameShell({
+      gameId: 'heels',
+      titleKey: 'heels',
+      tick: tick,
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'oneHeel',
+          rightKey: 'twoHeels',
+          checked: false,
+          onChange: function (checked) {
+            dualMode = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Четвертинки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage" id="stage">
+      <div class="quads" id="quads">
+        <div class="quad"></div>
+        <div class="quad"></div>
+        <div class="quad"></div>
+        <div class="quad"></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const stage = document.getElementById('stage');
+    const quads = Array.from(document.querySelectorAll('.quad'));
+    let unique = false;
+
+    function tick(silent) {
+      if (!silent) {
+        triggerChangeAnimation(stage);
+        quads.forEach(function (quad) {
+          quad.classList.remove('flash-bg');
+        });
+        void stage.offsetWidth;
+        quads.forEach(function (quad) {
+          quad.classList.add('flash-bg');
+        });
+      }
+      const colors = pickColors(4, unique);
+      quads.forEach(function (quad, i) {
+        quad.style.backgroundColor = IGRO_COLORS[colors[i]];
+      });
+    }
+
+    mountGameShell({
+      gameId: 'quarters',
+      titleKey: 'quarters',
+      tick: tick,
+      reset: function () {
+        quads.forEach(function (quad) {
+          quad.style.backgroundColor = '';
+        });
+      },
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'colorsRepeat',
+          rightKey: 'colorsUnique',
+          checked: false,
+          onChange: function (checked) {
+            unique = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+    });
+  </script>
+</body>
+</html>

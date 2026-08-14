@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Стрелочки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .arrows-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6%;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .arrow {
+      height: 72%;
+      width: auto;
+      aspect-ratio: 1;
+      max-width: 70%;
+      max-height: 72%;
+      overflow: visible;
+      transform-origin: center center;
+    }
+
+    .arrows-wrap.dual .arrow {
+      max-width: 38%;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="arrows-wrap" id="arrows-wrap">
+        <div id="arrow-a" class="arrow art-shape"></div>
+        <div id="arrow-b" class="arrow art-shape" hidden></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const ARROW_URL = '../../assets/arrows/arrow.svg';
+    const wrap = document.getElementById('arrows-wrap');
+    const arrowA = document.getElementById('arrow-a');
+    const arrowB = document.getElementById('arrow-b');
+    const rotations = { right: 0, down: 90, left: 180, up: -90 };
+    let dualMode = false;
+    let fourSides = true;
+
+    function pool() {
+      return fourSides ? ['up', 'down', 'left', 'right'] : ['left', 'right'];
+    }
+
+    function paintArrow(el) {
+      const dir = randomDirection(pool());
+      paintAsset(el, ARROW_URL, IGRO_COLORS[randomColorKey()]);
+      el.style.transform = 'rotate(' + rotations[dir] + 'deg)';
+    }
+
+    function tick(silent) {
+      triggerChangeAnimation(wrap, silent);
+      if (!dualMode) {
+        arrowB.hidden = true;
+        wrap.classList.remove('dual');
+        paintArrow(arrowA);
+        return;
+      }
+      arrowB.hidden = false;
+      wrap.classList.add('dual');
+      paintArrow(arrowA);
+      paintArrow(arrowB);
+    }
+
+    mountGameShell({
+      gameId: 'arrows',
+      titleKey: 'arrows',
+      tick: tick,
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(startCol, {
+          leftKey: 'oneArrow',
+          rightKey: 'twoArrows',
+          checked: false,
+          onChange: function (checked) {
+            dualMode = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+        createPairSwitch(endCol, {
+          leftKey: 'leftRight',
+          rightKey: 'fourSides',
+          checked: true,
+          onChange: function (checked) {
+            fourSides = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+    });
+  </script>
+</body>
+</html>
