@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивные игры от igroprofi</title>
+  <meta name="description" content="Интерактивные мини-игры для занятий и развития детей. Цвета, цифры, ладошки, стрелочки и другие интерактивы — по подписке.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/logo/logo-icon.png">
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body class="home">
@@ -171,9 +174,56 @@
         </div>
       </a>
     </main>
+
+    <section class="plans" id="plans">
+      <div class="plans__head">
+        <h2 data-i18n="plansTitle">Подписка igroprofi</h2>
+        <p data-i18n="plansSubtitle">Полный доступ ко всем интерактивам для занятий и развития</p>
+      </div>
+
+      <div class="plans__cards">
+        <div class="plan-card" data-plan="month">
+          <div class="plan-card__badge" data-i18n="planMonth">1 месяц</div>
+          <div class="plan-card__price">350 <span data-i18n="rub">₽</span></div>
+          <ul class="plan-card__feats">
+            <li data-i18n="featAll">Все интерактивы без ограничений</li>
+            <li data-i18n="featNew">Новые игры по мере выхода</li>
+            <li data-i18n="featUpdates">Обновления и новые режимы</li>
+            <li data-i18n="featAuto">Автопродление не требуется</li>
+          </ul>
+          <button type="button" class="plan-card__btn" data-buy="month" data-i18n="buyPlan">Оформить подписку</button>
+        </div>
+
+        <div class="plan-card plan-card--featured" data-plan="forever">
+          <div class="plan-card__badge" data-i18n="planForever">Навсегда</div>
+          <div class="plan-card__price">2 700 <span data-i18n="rub">₽</span></div>
+          <ul class="plan-card__feats">
+            <li data-i18n="featAll">Все интерактивы без ограничений</li>
+            <li data-i18n="featNew">Новые игры по мере выхода</li>
+            <li data-i18n="featUpdates">Обновления и новые режимы</li>
+            <li data-i18n="featLifetime">Одноразовый платёж навсегда</li>
+          </ul>
+          <button type="button" class="plan-card__btn" data-buy="forever" data-i18n="buyPlan">Оформить подписку</button>
+        </div>
+      </div>
+
+      <p class="plans__note" data-i18n="plansNote">Оплата через сервис ЮKassa: банковские карты, СБП, электронные кошельки. Деньги вернём, если что-то не подойдёт — условия в Пользовательском соглашении.</p>
+    </section>
   </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span class="footer__brand">igroprofi</span>
+      <nav class="footer__links">
+        <a href="oferta.html" data-i18n="offerLink">Пользовательское соглашение</a>
+        <a href="privacy.html" data-i18n="privacyLink">Политика конфиденциальности</a>
+      </nav>
+      <span class="footer__copy">© 2026 igroprofi</span>
+    </div>
+  </footer>
   <script src="js/auth.js"></script>
   <script src="js/shared.js"></script>
+  <script src="js/payment.js"></script>
   <script>
     function refreshHome() {
       applyI18n();

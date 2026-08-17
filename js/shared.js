@@ -70,6 +70,20 @@ const I18N = {
     horizontal: 'горизонтально',
     colorsSame: 'цвета могут быть одинаковыми',
     colorsDifferent: 'цвета не могут быть одинаковыми',
+    plansTitle: 'Подписка igroprofi',
+    plansSubtitle: 'Полный доступ ко всем интерактивам для занятий и развития',
+    planMonth: '1 месяц',
+    planForever: 'Навсегда',
+    featAll: 'Все интерактивы без ограничений',
+    featNew: 'Новые игры по мере выхода',
+    featUpdates: 'Обновления и новые режимы',
+    featAuto: 'Автопродление не требуется',
+    featLifetime: 'Одноразовый платёж навсегда',
+    buyPlan: 'Оформить подписку',
+    rub: '₽',
+    plansNote: 'Оплата через сервис ЮKassa: банковские карты, СБП, электронные кошельки. Деньги вернём, если что-то не подойдёт — условия в Пользовательском соглашении.',
+    offerLink: 'Пользовательское соглашение',
+    privacyLink: 'Политика конфиденциальности',
   },
   en: {
     title: 'Interactive games by igroprofi',
@@ -123,6 +137,20 @@ const I18N = {
     horizontal: 'horizontal',
     colorsSame: 'colors may match',
     colorsDifferent: 'colors cannot match',
+    plansTitle: 'igroprofi subscription',
+    plansSubtitle: 'Full access to all activities for lessons and development',
+    planMonth: '1 month',
+    planForever: 'Forever',
+    featAll: 'All activities without limits',
+    featNew: 'New games as they come out',
+    featUpdates: 'Updates and new modes',
+    featAuto: 'No auto-renewal required',
+    featLifetime: 'One-time payment forever',
+    buyPlan: 'Get the subscription',
+    rub: '₽',
+    plansNote: 'Paid via YooKassa: bank cards, SBP, e-wallets. Money-back if something goes wrong — see the Terms of Service.',
+    offerLink: 'Terms of Service',
+    privacyLink: 'Privacy Policy',
   },
 };
 
@@ -563,15 +591,28 @@ function paintAsset(container, url, color, options) {
 }
 
 function guardGameAccess(gameId) {
-  if (typeof Auth === 'undefined') return true;
-  if (Auth.canPlay(gameId)) return true;
-  window.location.href = '../../index.html?locked=' + encodeURIComponent(gameId);
-  return false;
+  return new Promise(function (resolve) {
+    if (typeof Auth === 'undefined' || typeof Auth.canPlayAsync !== 'function') {
+      resolve(true);
+      return;
+    }
+    Auth.canPlayAsync(gameId).then(function (allowed) {
+      if (allowed) {
+        resolve(true);
+        return;
+      }
+      window.location.href = '../../index.html?locked=' + encodeURIComponent(gameId);
+      resolve(false);
+    });
+  });
 }
 
-function mountGameShell(options) {
+async function mountGameShell(options) {
   options = options || {};
-  if (options.gameId && !guardGameAccess(options.gameId)) return;
+  if (options.gameId) {
+    const allowed = await guardGameAccess(options.gameId);
+    if (!allowed) return;
+  }
 
   Interactive.tick = options.tick;
   Interactive.reset = options.reset || null;

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оплата — igroprofi</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/logo/logo-icon.png">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="result">
+  <div class="result__card">
+    <img class="result__logo" src="assets/logo/logo.svg" alt="igroprofi">
+    <div class="pay-step pay-step--center" data-result-step="checking" id="step-checking">
+      <div class="pay-spinner"></div>
+      <p class="result__text" id="checking-text">Проверяем оплату…</p>
+    </div>
+
+    <div class="pay-step pay-step--center" data-result-step="success" hidden>
+      <div class="pay-success-ico" aria-hidden="true">✓</div>
+      <h2 class="result__title" id="success-title">Подписка активирована!</h2>
+      <p class="result__text" id="success-text">Спасибо! Все интерактивы теперь доступны.</p>
+      <a class="auth-primary result__btn" href="index.html" id="go-home">На главную</a>
+    </div>
+
+    <div class="pay-step pay-step--center" data-result-step="canceled" hidden>
+      <div class="result__ico" aria-hidden="true">✕</div>
+      <h2 class="result__title" id="cancel-title">Платёж не завершён</h2>
+      <p class="result__text" id="cancel-text">Если вы оплатили подписку, деньги вернутся автоматически. Можно попробовать ещё раз.</p>
+      <a class="auth-primary result__btn" href="index.html#plans" id="retry-link">Выбрать подписку</a>
+    </div>
+
+    <div class="pay-step pay-step--center" data-result-step="unknown" hidden>
+      <div class="result__ico" aria-hidden="true">?</div>
+      <h2 class="result__title" id="unknown-title">Мы проверяем ваш платёж</h2>
+      <p class="result__text" id="unknown-text">Обычно это занимает несколько минут. Проверьте статус подписки в профиле.</p>
+      <a class="auth-primary result__btn" href="index.html" id="to-profile">На главную</a>
+    </div>
+  </div>
+  <script src="js/auth.js"></script>
+  <script src="js/shared.js"></script>
+  <script>
+    (function () {
+      var resultI18n = {
+        ru: {
+          checking: 'Проверяем оплату…',
+          successTitle: 'Подписка активирована!',
+          successText: 'Спасибо! Все интерактивы теперь доступны.',
+          cancelTitle: 'Платёж не завершён',
+          cancelText: 'Если вы оплатили подписку, деньги вернутся автоматически. Можно попробовать ещё раз.',
+          unknownTitle: 'Мы проверяем ваш платёж',
+          unknownText: 'Обычно это занимает несколько минут. Проверьте статус подписки в профиле.',
+          goHome: 'На главную',
+          retry: 'Выбрать подписку',
+        },
+        en: {
+          checking: 'Checking payment…',
+          successTitle: 'Subscription activated!',
+          successText: 'Thank you! All activities are now available.',
+          cancelTitle: 'Payment not completed',
+          cancelText: 'If you paid, the money will be refunded automatically. You can try again.',
+          unknownTitle: 'We are checking your payment',
+          unknownText: 'It usually takes a few minutes. Check your subscription status in the profile.',
+          goHome: 'Go home',
+          retry: 'Choose a subscription',
+        },
+      };
+
+      function rt(key) {
+        var pack = resultI18n[getLang()] || resultI18n.ru;
+        return pack[key] || resultI18n.ru[key];
+      }
+
+      function setStep(step) {
+        document.querySelectorAll('[data-result-step]').forEach(function (el) {
+          el.hidden = el.getAttribute('data-result-step') !== step;
+        });
+      }
+
+      function setText(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = value;
+      }
+
+      function fillTexts() {
+        setText('checking-text', rt('checking'));
+        setText('success-title', rt('successTitle'));
+        setText('success-text', rt('successText'));
+        setText('go-home', rt('goHome'));
+        setText('cancel-title', rt('cancelTitle'));
+        setText('cancel-text', rt('cancelText'));
+        setText('retry-link', rt('retry'));
+        setText('unknown-title', rt('unknownTitle'));
+        setText('unknown-text', rt('unknownText'));
+        setText('to-profile', rt('goHome'));
+      }
+
+      var params = new URLSearchParams(window.location.search);
+      var paymentId = params.get('paymentId') || params.get('payment_id') || '';
+      var planParam = params.get('plan') || '';
+
+      fillTexts();
+
+      if (!paymentId) {
+        setStep('unknown');
+        return;
+      }
+
+      var attempts = 0;
+      var maxAttempts = 15;
+
+      function check() {
+        Auth.api('/api/check-payment?id=' + encodeURIComponent(paymentId))
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (data && data.status === 'succeeded') {
+              return Auth.loadUser();
+            }
+            if (data && data.status === 'canceled') {
+              setStep('canceled');
+              return null;
+            }
+            attempts += 1;
+            if (attempts >= maxAttempts) {
+              setStep('unknown');
+              return null;
+            }
+            return new Promise(function (resolve) {
+              setTimeout(function () {
+                resolve(check());
+              }, 2000);
+            });
+          })
+          .then(function (loaded) {
+            if (loaded === undefined || loaded === null) return;
+            setStep('success');
+          })
+          .catch(function () {
+            attempts += 1;
+            if (attempts >= maxAttempts) {
+              setStep('unknown');
+              return;
+            }
+            setTimeout(check, 2500);
+          });
+      }
+
+      setTimeout(check, 800);
+    })();
+  </script>
+</body>
+</html>

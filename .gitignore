@@ -5,6 +5,7 @@ Thumbs.db
 *.log
 .env
 .env.*
+!.env.example
 .env.local
 ishodniki/
 исходники/

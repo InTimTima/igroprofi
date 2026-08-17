@@ -1,62 +1,87 @@
 const Auth = {
   FREE_GAMES: ['color'],
-  USERS_KEY: 'igro-users-v1',
-  SESSION_KEY: 'igro-session-v1',
-  MONTH_PRICE: 250,
-  FOREVER_PRICE: 2500,
+  TOKEN_KEY: 'igro-token-v1',
+  CACHE_KEY: 'igro-user-cache-v1',
   MONTH_MS: 30 * 24 * 60 * 60 * 1000,
 
-  getUsers: function () {
+  _token: '',
+  _user: null,
+  _loadPromise: null,
+
+  init: function () {
+    this._token = localStorage.getItem(this.TOKEN_KEY) || '';
     try {
-      return JSON.parse(localStorage.getItem(this.USERS_KEY) || '{}');
+      const cached = JSON.parse(localStorage.getItem(this.CACHE_KEY) || 'null');
+      if (cached && cached.login) this._user = cached;
     } catch (err) {
-      return {};
+      this._user = null;
+    }
+    if (this._token) {
+      this.ensureLoaded().then(function () {
+        if (document.body && document.body.classList.contains('home')) {
+          if (typeof refreshHomeAuthUI === 'function') refreshHomeAuthUI();
+        }
+      });
     }
   },
 
-  saveUsers: function (users) {
-    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-  },
-
-  getSessionLogin: function () {
-    return localStorage.getItem(this.SESSION_KEY) || '';
-  },
-
-  setSession: function (login) {
-    if (login) localStorage.setItem(this.SESSION_KEY, login);
-    else localStorage.removeItem(this.SESSION_KEY);
+  api: function (path, options) {
+    options = options || {};
+    const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+    if (this._token) headers.Authorization = 'Bearer ' + this._token;
+    return fetch(path, Object.assign({}, options, { headers: headers }));
   },
 
   getCurrentUser: function () {
-    const login = this.getSessionLogin();
-    if (!login) return null;
-    const users = this.getUsers();
-    const user = users[login];
-    if (!user) {
-      this.setSession('');
-      return null;
-    }
-    return Object.assign({ login: login }, user);
+    return this._user;
   },
 
   isLoggedIn: function () {
-    return !!this.getCurrentUser();
+    return !!this._token;
+  },
+
+  ensureLoaded: function () {
+    if (!this._token) return Promise.resolve(null);
+    if (this._loadPromise) return this._loadPromise;
+    this._loadPromise = this.loadUser()
+      .then(function (u) {
+        Auth._loadPromise = null;
+        return u;
+      })
+      .catch(function () {
+        Auth._loadPromise = null;
+        return null;
+      });
+    return this._loadPromise;
+  },
+
+  loadUser: function () {
+    if (!this._token) {
+      this._user = null;
+      return Promise.resolve(null);
+    }
+    return this.api('/api/me').then(function (res) {
+      return res.json().then(function (data) {
+        if (res.ok && data.ok) {
+          Auth._user = data.user;
+          try {
+            localStorage.setItem(Auth.CACHE_KEY, JSON.stringify(Auth._user));
+          } catch (err) { /* ignore */ }
+        } else {
+          Auth._user = null;
+          localStorage.removeItem(Auth.CACHE_KEY);
+        }
+        return Auth._user;
+      });
+    });
   },
 
   hasSubscription: function () {
-    const user = this.getCurrentUser();
+    const user = this._user;
     if (!user || !user.subscription) return false;
     if (user.subscription === 'forever') return true;
     if (user.subscription === 'month') {
-      if (!user.expiresAt || user.expiresAt <= Date.now()) {
-        const users = this.getUsers();
-        if (users[user.login]) {
-          users[user.login].subscription = null;
-          users[user.login].expiresAt = null;
-          this.saveUsers(users);
-        }
-        return false;
-      }
+      if (!user.expiresAt || user.expiresAt <= Date.now()) return false;
       return true;
     }
     return false;
@@ -67,73 +92,82 @@ const Auth = {
     return this.hasSubscription();
   },
 
+  canPlayAsync: function (gameId) {
+    if (this.FREE_GAMES.indexOf(gameId) !== -1) return Promise.resolve(true);
+    return this.ensureLoaded().then(function () {
+      return Auth.hasSubscription();
+    });
+  },
+
   register: function (login, password) {
     login = String(login || '').trim().toLowerCase();
     password = String(password || '');
-    if (login.length < 3) return { ok: false, error: 'loginShort' };
-    if (password.length < 4) return { ok: false, error: 'passwordShort' };
-    const users = this.getUsers();
-    if (users[login]) return { ok: false, error: 'loginTaken' };
-    users[login] = {
-      password: password,
-      subscription: null,
-      expiresAt: null,
-      createdAt: Date.now(),
-    };
-    this.saveUsers(users);
-    this.setSession(login);
-    return { ok: true };
+    if (login.length < 3) return Promise.resolve({ ok: false, error: 'loginShort' });
+    if (password.length < 4) return Promise.resolve({ ok: false, error: 'passwordShort' });
+    return this.api('/api/register', {
+      method: 'POST',
+      body: JSON.stringify({ login: login, password: password }),
+    })
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data.ok) return { ok: false, error: data.error || 'serverError' };
+        Auth._token = data.token;
+        localStorage.setItem(Auth.TOKEN_KEY, Auth._token);
+        Auth._user = data.user;
+        try {
+          localStorage.setItem(Auth.CACHE_KEY, JSON.stringify(Auth._user));
+        } catch (err) { /* ignore */ }
+        return { ok: true };
+      })
+      .catch(function () {
+        return { ok: false, error: 'serverError' };
+      });
   },
 
   login: function (login, password) {
     login = String(login || '').trim().toLowerCase();
     password = String(password || '');
-    const users = this.getUsers();
-    const user = users[login];
-    if (!user || user.password !== password) return { ok: false, error: 'badCredentials' };
-    this.setSession(login);
-    return { ok: true };
+    return this.api('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ login: login, password: password }),
+    })
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data.ok) return { ok: false, error: data.error || 'badCredentials' };
+        Auth._token = data.token;
+        localStorage.setItem(Auth.TOKEN_KEY, Auth._token);
+        Auth._user = data.user;
+        try {
+          localStorage.setItem(Auth.CACHE_KEY, JSON.stringify(Auth._user));
+        } catch (err) { /* ignore */ }
+        return { ok: true };
+      })
+      .catch(function () {
+        return { ok: false, error: 'serverError' };
+      });
   },
 
   logout: function () {
-    this.setSession('');
-  },
-
-  buyMonth: function () {
-    const user = this.getCurrentUser();
-    if (!user) return { ok: false, error: 'needAuth' };
-    const users = this.getUsers();
-    const now = Date.now();
-    const base = user.subscription === 'month' && user.expiresAt > now ? user.expiresAt : now;
-    users[user.login].subscription = 'month';
-    users[user.login].expiresAt = base + this.MONTH_MS;
-    this.saveUsers(users);
-    return { ok: true };
-  },
-
-  buyForever: function () {
-    const user = this.getCurrentUser();
-    if (!user) return { ok: false, error: 'needAuth' };
-    const users = this.getUsers();
-    users[user.login].subscription = 'forever';
-    users[user.login].expiresAt = null;
-    this.saveUsers(users);
-    return { ok: true };
-  },
-
-  clearSubscription: function () {
-    const user = this.getCurrentUser();
-    if (!user) return { ok: false, error: 'needAuth' };
-    const users = this.getUsers();
-    users[user.login].subscription = null;
-    users[user.login].expiresAt = null;
-    this.saveUsers(users);
-    return { ok: true };
+    const token = this._token;
+    this._token = '';
+    this._user = null;
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.CACHE_KEY);
+    if (token) {
+      fetch('/api/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      }).catch(function () { /* ignore */ });
+    }
   },
 
   subscriptionLabel: function () {
-    const user = this.getCurrentUser();
-    if (!user) return at('subNone');
+    const user = this._user;
+    if (!user || !user.subscription) return at('subNone');
     if (user.subscription === 'forever') return at('subForever');
     if (user.subscription === 'month' && user.expiresAt > Date.now()) {
       const until = new Date(user.expiresAt).toLocaleDateString(
@@ -163,10 +197,9 @@ const AUTH_I18N = {
     subNone: 'Нет подписки',
     subForever: 'Навсегда',
     subMonthUntil: 'Месяц до',
-    buyMonth: 'Месяц — 250 ₽',
-    buyForever: 'Навсегда — 2500 ₽',
-    renewMonth: 'Продлить месяц — 250 ₽',
-    clearSub: 'Тест: сбросить подписку',
+    buyMonth: 'Месяц — 350 ₽',
+    buyForever: 'Навсегда — 2 700 ₽',
+    renewMonth: 'Продлить месяц — 350 ₽',
     lockedHint: 'Доступно по подписке',
     lockedToast: 'Этот интерактив доступен только с подпиской',
     loginShort: 'Логин от 3 символов',
@@ -176,7 +209,7 @@ const AUTH_I18N = {
     needAuth: 'Сначала войдите в аккаунт',
     guest: 'Гость',
     close: 'Закрыть',
-    authDemoNote: 'Пока это демо-фронтенд: оплата имитируется, данные хранятся в браузере.',
+    authDemoNote: 'Аккаунт и подписка хранятся в базе данных. Оплата — через сервис ЮKassa.',
   },
   en: {
     loginRegister: 'Log in / Sign up',
@@ -195,10 +228,9 @@ const AUTH_I18N = {
     subNone: 'No subscription',
     subForever: 'Forever',
     subMonthUntil: 'Month until',
-    buyMonth: '1 month — 250 ₽',
-    buyForever: 'Forever — 2500 ₽',
-    renewMonth: 'Renew month — 250 ₽',
-    clearSub: 'Test: clear subscription',
+    buyMonth: '1 month — 350 ₽',
+    buyForever: 'Forever — 2,700 ₽',
+    renewMonth: 'Renew month — 350 ₽',
     lockedHint: 'Subscription required',
     lockedToast: 'This activity is available with a subscription only',
     loginShort: 'Login must be at least 3 characters',
@@ -208,7 +240,7 @@ const AUTH_I18N = {
     needAuth: 'Please log in first',
     guest: 'Guest',
     close: 'Close',
-    authDemoNote: 'Frontend demo for now: payment is simulated and data is stored in the browser.',
+    authDemoNote: 'Account and subscription are stored in a database. Payments are processed via YooKassa.',
   },
 };
 
@@ -289,7 +321,6 @@ function fillAuthTexts() {
   setText('profile-sub-label', at('yourSub'));
   setText('profile-demo-note', at('authDemoNote'));
   setText('profile-logout', at('logout'));
-  setText('clear-sub', at('clearSub'));
   refreshHomeAuthUI();
 }
 
@@ -344,11 +375,16 @@ function mountHomeAuth() {
     card.dataset.authBound = '1';
     const gameId = card.getAttribute('data-game');
     card.addEventListener('click', function (event) {
-      if (Auth.canPlay(gameId)) return;
       event.preventDefault();
-      showLockedToast();
-      if (!Auth.isLoggedIn()) openAuthModal('login');
-      else openProfileDrawer();
+      Auth.canPlayAsync(gameId).then(function (allowed) {
+        if (allowed) {
+          window.location.href = card.getAttribute('href');
+          return;
+        }
+        showLockedToast();
+        if (!Auth.isLoggedIn()) openAuthModal('login');
+        else openProfileDrawer();
+      });
     });
   });
 
@@ -403,8 +439,6 @@ function refreshHomeAuthUI() {
   }
   const buyForever = document.getElementById('buy-forever');
   if (buyForever) buyForever.textContent = at('buyForever');
-  const clearSub = document.getElementById('clear-sub');
-  if (clearSub) clearSub.textContent = at('clearSub');
 }
 
 function ensureAuthModals() {
@@ -443,7 +477,6 @@ function ensureAuthModals() {
       '<p class="auth-modal__note" id="profile-demo-note"></p>' +
       '<button type="button" class="auth-primary" id="buy-month"></button>' +
       '<button type="button" class="auth-primary auth-primary--alt" id="buy-forever"></button>' +
-      '<button type="button" class="auth-link auth-link--danger" id="clear-sub"></button>' +
       '<button type="button" class="auth-link" id="profile-logout"></button>' +
       '</div>';
     document.body.appendChild(drawer);
@@ -479,16 +512,28 @@ function ensureAuthModals() {
   document.getElementById('auth-submit').onclick = function () {
     const login = document.getElementById('auth-login').value;
     const password = document.getElementById('auth-password').value;
-    const result = authMode === 'login' ? Auth.login(login, password) : Auth.register(login, password);
-    if (!result.ok) {
-      const err = document.getElementById('auth-error');
-      err.textContent = at(result.error);
-      err.hidden = false;
-      return;
-    }
-    closeAuthModal();
-    refreshHomeAuthUI();
-    openProfileDrawer();
+    const submit = document.getElementById('auth-submit');
+    const err = document.getElementById('auth-error');
+    submit.disabled = true;
+    const promise = authMode === 'login' ? Auth.login(login, password) : Auth.register(login, password);
+    promise.then(function (result) {
+      submit.disabled = false;
+      if (!result.ok) {
+        err.textContent = at(result.error);
+        err.hidden = false;
+        return;
+      }
+      closeAuthModal();
+      refreshHomeAuthUI();
+      if (typeof window.getPendingPaymentPlan === 'function' && window.getPendingPaymentPlan()) {
+        const pendingPlan = window.getPendingPaymentPlan();
+        if (typeof window.clearPendingPaymentPlan === 'function') window.clearPendingPaymentPlan();
+        if (typeof openPaymentModal === 'function') openPaymentModal(pendingPlan);
+        else openProfileDrawer();
+      } else {
+        openProfileDrawer();
+      }
+    });
   };
   document.getElementById('auth-password').addEventListener('keydown', function (event) {
     if (event.key === 'Enter') document.getElementById('auth-submit').click();
@@ -504,26 +549,18 @@ function ensureAuthModals() {
     refreshHomeAuthUI();
   };
   document.getElementById('buy-month').onclick = function () {
-    const result = Auth.buyMonth();
-    if (!result.ok) {
-      closeProfileDrawer();
-      openAuthModal('login');
+    if (typeof openPaymentModal === 'function') {
+      openPaymentModal('month');
       return;
     }
-    refreshHomeAuthUI();
+    openProfileDrawer();
   };
   document.getElementById('buy-forever').onclick = function () {
-    const result = Auth.buyForever();
-    if (!result.ok) {
-      closeProfileDrawer();
-      openAuthModal('login');
+    if (typeof openPaymentModal === 'function') {
+      openPaymentModal('forever');
       return;
     }
-    refreshHomeAuthUI();
-  };
-  document.getElementById('clear-sub').onclick = function () {
-    Auth.clearSubscription();
-    refreshHomeAuthUI();
+    openProfileDrawer();
   };
 
   fillAuthTexts();
@@ -539,3 +576,5 @@ function showLockedToast() {
     hideEl(toast);
   }, 2800);
 }
+
+Auth.init();
