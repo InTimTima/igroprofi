@@ -9,6 +9,7 @@ create table if not exists public.users (
   login         text not null unique,
   password_hash text not null,
   subscription  text check (subscription in ('month', 'forever')) default null,
+  is_admin      boolean not null default false,
   expires_at    timestamptz default null,
   created_at    timestamptz not null default now()
 );

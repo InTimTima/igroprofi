@@ -4,6 +4,11 @@ const crypto = require('crypto');
 const db = require('./db.js');
 
 const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+const ADMIN_LOGIN = 'igroprofi';
+
+function isAdmin(user) {
+  return !!(user && (user.is_admin === true || user.login === ADMIN_LOGIN));
+}
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
@@ -49,6 +54,7 @@ function publicUser(user) {
   return {
     id: user.id,
     login: user.login,
+    isAdmin: isAdmin(user),
     subscription: user.subscription || null,
     expiresAt: user.expires_at ? new Date(user.expires_at).getTime() : null,
     createdAt: user.created_at ? new Date(user.created_at).getTime() : null,
@@ -124,6 +130,7 @@ module.exports = {
   hashPassword,
   verifyPassword,
   bearerToken,
+  isAdmin,
   publicUser,
   createSession,
   destroySession,

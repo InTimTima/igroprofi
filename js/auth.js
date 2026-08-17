@@ -87,15 +87,22 @@ const Auth = {
     return false;
   },
 
+  isAdmin: function () {
+    const user = this._user;
+    return !!(user && (user.isAdmin === true || user.login === 'igroprofi'));
+  },
+
   canPlay: function (gameId) {
+    if (this.isAdmin()) return true;
     if (this.FREE_GAMES.indexOf(gameId) !== -1) return true;
     return this.hasSubscription();
   },
 
   canPlayAsync: function (gameId) {
+    if (this.isAdmin()) return Promise.resolve(true);
     if (this.FREE_GAMES.indexOf(gameId) !== -1) return Promise.resolve(true);
     return this.ensureLoaded().then(function () {
-      return Auth.hasSubscription();
+      return Auth.hasSubscription() || Auth.isAdmin();
     });
   },
 
@@ -167,6 +174,7 @@ const Auth = {
 
   subscriptionLabel: function () {
     const user = this._user;
+    if (user && user.isAdmin) return at('subAdmin');
     if (!user || !user.subscription) return at('subNone');
     if (user.subscription === 'forever') return at('subForever');
     if (user.subscription === 'month' && user.expiresAt > Date.now()) {
@@ -194,6 +202,7 @@ const AUTH_I18N = {
     switchToLogin: 'Уже есть аккаунт',
     yourLogin: 'Логин',
     yourSub: 'Подписка',
+    subAdmin: 'Администратор',
     subNone: 'Нет подписки',
     subForever: 'Навсегда',
     subMonthUntil: 'Месяц до',
@@ -225,6 +234,7 @@ const AUTH_I18N = {
     switchToLogin: 'I already have an account',
     yourLogin: 'Login',
     yourSub: 'Subscription',
+    subAdmin: 'Administrator',
     subNone: 'No subscription',
     subForever: 'Forever',
     subMonthUntil: 'Month until',
