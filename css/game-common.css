@@ -431,6 +431,22 @@ input[type='range']::-moz-range-thumb {
   font-weight: 700;
 }
 
+.method-panel ul {
+  margin: 0.55rem 0 0.6rem;
+  padding-left: 1.15rem;
+}
+
+.method-panel li {
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  margin-bottom: 0.4rem;
+}
+
+.method-panel ul ul {
+  margin: 0.4rem 0 0.35rem;
+}
+
 .method-panel__close {
   float: right;
   border: 0;

@@ -27,7 +27,7 @@ const I18N = {
     methodica: 'Методичка',
     methodicaTitle: 'Методичка',
     methodicaClose: 'Закрыть',
-    methodicaStub: 'Здесь будет описание, как использовать этот интерактив: идеи занятий, подсказки педагогу и примеры. Пока это заглушка — позже заменим на настоящий текст, фото и видео.',
+    methodicaStub: 'Скоро здесь будет методичка. Здесь появится подробное описание, как использовать этот интерактив: идеи занятий, подсказки педагогу и примеры упражнений.',
     speed: 'Скорость',
     start: 'Старт',
     stop: 'Стоп',
@@ -94,7 +94,7 @@ const I18N = {
     methodica: 'Guide',
     methodicaTitle: 'Guide',
     methodicaClose: 'Close',
-    methodicaStub: 'This is where we will explain how to use this activity: teaching ideas, tips and examples. This is a placeholder for now and will later be replaced with real text, photos and video.',
+    methodicaStub: 'The guide will be here soon. This section will explain how to use this activity: lesson ideas, tips for teachers and exercise examples.',
     speed: 'Speed',
     start: 'Start',
     stop: 'Stop',
@@ -653,10 +653,11 @@ async function mountGameShell(options) {
     const panel = document.createElement('div');
     panel.className = 'method-panel';
     panel.hidden = true;
+    const content = options.methodica || '<p>' + t('methodicaStub') + '</p>';
     panel.innerHTML =
       '<button type="button" class="method-panel__close">' + t('methodicaClose') + '</button>' +
       '<h2>' + t('methodicaTitle') + '</h2>' +
-      '<p>' + t('methodicaStub') + '</p>';
+      content;
     document.body.appendChild(panel);
 
     methodBtn.addEventListener('click', () => {
