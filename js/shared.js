@@ -31,6 +31,8 @@ const I18N = {
     speed: 'Скорость',
     start: 'Старт',
     stop: 'Стоп',
+    pause: 'Пауза',
+    resume: 'Продолжить',
     super: 'Супер!',
     cheer: 'Ура! Какой ты молодец!',
     lang: 'EN',
@@ -74,6 +76,8 @@ const I18N = {
     fourSticks: '4 палочки',
     oneLimb: 'одна рука или нога',
     bothLimb: 'и рука и нога',
+    legsNoCross: 'без перекреста ног',
+    legsRandom: 'случайно',
     shapesTwo: 'квадрат, круг',
     shapesThree: 'квадрат, круг, треугольник',
     shapesRepeat: 'фигуры повторяются',
@@ -121,6 +125,8 @@ const I18N = {
     speed: 'Speed',
     start: 'Start',
     stop: 'Stop',
+    pause: 'Pause',
+    resume: 'Resume',
     super: 'Super!',
     cheer: 'Yay! You did great!',
     lang: 'RU',
@@ -164,6 +170,8 @@ const I18N = {
     fourSticks: '4 sticks',
     oneLimb: 'one hand or foot',
     bothLimb: 'a hand and a foot',
+    legsNoCross: 'no crossed legs',
+    legsRandom: 'random',
     shapesTwo: 'square, circle',
     shapesThree: 'square, circle, triangle',
     shapesRepeat: 'shapes may repeat',
@@ -241,6 +249,8 @@ const Interactive = {
   audio: null,
   lastSoundAt: 0,
   playBtn: null,
+  pauseBtn: null,
+  paused: false,
   base: (function () {
     const path = window.location.pathname || '';
     return path.indexOf('/games/') !== -1 ? '../../' : '';
@@ -454,6 +464,7 @@ function runLoop(token) {
   Interactive.intervalId = setInterval(() => {
     if (token !== Interactive.token) return;
     if (!Interactive.active || document.hidden) return;
+    if (Interactive.paused) return;
     if (typeof Interactive.tick === 'function') Interactive.tick(false);
   }, Interactive.speedMs);
 }
@@ -476,6 +487,7 @@ function updatePlayBtn() {
   Interactive.playBtn.textContent = busy ? t('stop') : t('start');
   Interactive.playBtn.classList.toggle('play-btn--stop', busy);
   Interactive.playBtn.setAttribute('aria-pressed', busy ? 'true' : 'false');
+  updatePauseBtn();
 }
 
 function popCountdown(el, value) {
@@ -550,6 +562,7 @@ function userStart() {
   if (ctx && ctx.state === 'suspended') ctx.resume();
   clearLoop();
   Interactive.active = false;
+  Interactive.paused = false;
   if (typeof Interactive.reset === 'function') Interactive.reset();
   beginCountdown();
 }
@@ -558,6 +571,7 @@ function userStop() {
   const wasRunning = Interactive.active;
   clearLoop();
   Interactive.active = false;
+  Interactive.paused = false;
   updatePlayBtn();
   if (wasRunning) celebrateThenIdle();
   else showIdle();
@@ -566,6 +580,7 @@ function userStop() {
 function hardStop() {
   Interactive.active = false;
   Interactive.countingDown = false;
+  Interactive.paused = false;
   clearLoop();
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   if (Interactive.audio && Interactive.audio.state === 'running') {
@@ -593,6 +608,14 @@ function createSpeedControl(container, initialIndex) {
   slider.step = '1';
   slider.value = String(index);
 
+  const pauseBtn = document.createElement('button');
+  pauseBtn.type = 'button';
+  pauseBtn.className = 'pause-btn';
+  pauseBtn.textContent = '❚❚';
+  pauseBtn.setAttribute('aria-label', t('pause'));
+  pauseBtn.title = t('pause');
+  Interactive.pauseBtn = pauseBtn;
+
   const ticks = document.createElement('div');
   ticks.className = 'speed-ticks';
   SPEED_STEPS.forEach((step) => {
@@ -601,13 +624,50 @@ function createSpeedControl(container, initialIndex) {
     ticks.appendChild(tick);
   });
 
-  slider.addEventListener('input', () => {
-    Interactive.speedMs = SPEED_STEPS[Number(slider.value)].ms;
-    if (Interactive.active) runLoop(Interactive.token);
+  const row = document.createElement('div');
+  row.className = 'speed-row';
+
+  pauseBtn.addEventListener('click', () => {
+    togglePause();
   });
 
-  wrapper.append(label, slider, ticks);
+  slider.addEventListener('input', () => {
+    Interactive.speedMs = SPEED_STEPS[Number(slider.value)].ms;
+    if (Interactive.active && !Interactive.paused) runLoop(Interactive.token);
+  });
+
+  row.append(pauseBtn, slider);
+  wrapper.append(label, row, ticks);
   container.appendChild(wrapper);
+}
+
+function togglePause() {
+  if (!Interactive.active || Interactive.countingDown) return;
+  Interactive.paused = !Interactive.paused;
+  updatePauseBtn();
+  if (!Interactive.paused) {
+    const token = Interactive.token;
+    if (typeof Interactive.tick === 'function') Interactive.tick(false);
+    runLoop(token);
+  }
+}
+
+function updatePauseBtn() {
+  const btn = Interactive.pauseBtn;
+  if (!btn) return;
+  const busy = isBusy();
+  btn.disabled = !busy;
+  if (Interactive.paused) {
+    btn.textContent = '▶';
+    btn.setAttribute('aria-label', t('resume'));
+    btn.title = t('resume');
+    btn.classList.add('pause-btn--on');
+  } else {
+    btn.textContent = '❚❚';
+    btn.setAttribute('aria-label', t('pause'));
+    btn.title = t('pause');
+    btn.classList.remove('pause-btn--on');
+  }
 }
 
 function createPairSwitch(container, options) {

@@ -601,6 +601,12 @@ body {
   }
 }
 
+@media (max-width: 760px) {
+  .preview-pair--feet .preview-mask {
+    transform: scale(1.725);
+  }
+}
+
 @media (max-width: 720px) {
   .home-top-bar {
     top: 0.65rem;

@@ -30,17 +30,16 @@
       max-width: 36%;
     }
 
-    .feet-container.cross {
-      flex-direction: row-reverse;
-      gap: -8%;
-    }
+    @media (max-width: 760px) {
+      .foot {
+        height: 100%;
+        max-height: 100%;
+        max-width: 84%;
+      }
 
-    .feet-container.cross #foot-a {
-      transform: rotate(22deg);
-    }
-
-    .feet-container.cross #foot-b {
-      transform: rotate(-22deg);
+      .feet-container.dual .foot {
+        max-width: 72%;
+      }
     }
   </style>
 </head>
@@ -69,6 +68,7 @@
     const footA = document.getElementById('foot-a');
     const footB = document.getElementById('foot-b');
     let dualMode = false;
+    let randomMode = false;
 
     function tick(silent) {
       triggerChangeAnimation(container, silent);
@@ -76,7 +76,6 @@
       if (!dualMode) {
         footB.hidden = true;
         container.classList.remove('dual');
-        container.classList.remove('cross');
         container.style.flexDirection = 'row';
         paintAsset(footA, ASSETS[randomItem(['left', 'right'])], IGRO_COLORS[randomColorKey()]);
         return;
@@ -84,9 +83,11 @@
 
       footB.hidden = false;
       container.classList.add('dual');
-      const crossed = Math.random() < 0.5;
-      container.classList.toggle('cross', crossed);
-      container.style.flexDirection = crossed ? 'row-reverse' : (Math.random() < 0.5 ? 'row-reverse' : 'row');
+      if (randomMode) {
+        container.style.flexDirection = Math.random() < 0.5 ? 'row-reverse' : 'row';
+      } else {
+        container.style.flexDirection = 'row';
+      }
       paintAsset(footA, ASSETS.left, IGRO_COLORS[randomColorKey()]);
       paintAsset(footB, ASSETS.right, IGRO_COLORS[randomColorKey()]);
     }
@@ -100,6 +101,15 @@
         footB.innerHTML = '';
       },
       setupControls: function (startCol, endCol) {
+        createPairSwitch(startCol, {
+          leftKey: 'legsNoCross',
+          rightKey: 'legsRandom',
+          checked: false,
+          onChange: function (checked) {
+            randomMode = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
         createPairSwitch(endCol, {
           leftKey: 'oneHeel',
           rightKey: 'twoHeels',
@@ -117,6 +127,7 @@
         '<li>Назовите цвет ножки — пусть ребёнок найдёт предмет такого же цвета.</li>' +
         '<li>Покажите ребёнку, как ставить ножки: как на экране — перекрестить или поставить рядом.</li>' +
         '<li>Положите на пол следы — пусть ребёнок встанет на них, как ножки на экране.</li>' +
+        '<li>В режиме «без перекреста» правая ножка всегда справа, левая слева.</li>' +
         '<li>Просите топнуть левой или правой ножкой в цвет, который на экране.</li>' +
         '</ul>',
     });
