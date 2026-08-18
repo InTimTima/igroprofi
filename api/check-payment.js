@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
     if (id.indexOf('demo-') === 0) {
       if (payments.config()) return json(res, 400, { ok: false, error: 'badPayment' });
       const plan = id.replace('demo-', '');
-      if (plan !== 'month' && plan !== 'forever') return json(res, 400, { ok: false, error: 'badPlan' });
+      if (!payments.PRICES[plan]) return json(res, 400, { ok: false, error: 'badPlan' });
       await auth.activateSubscription(user.id, plan);
       return json(res, 200, { ok: true, mode: 'demo', status: 'succeeded', plan: plan });
     }

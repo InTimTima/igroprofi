@@ -72,15 +72,15 @@
       <a class="card" data-game="quarters" href="games/quarters/index.html">
         <div class="card__preview">
           <div class="preview-quads preview-quads--gap">
+            <div class="preview-quad" style="background:#ffffff"></div>
             <div class="preview-quad" style="background:#E53935"></div>
-            <div class="preview-quad" style="background:#FDD835"></div>
-            <div class="preview-quad" style="background:#43A047"></div>
-            <div class="preview-quad" style="background:#1E88E5"></div>
+            <div class="preview-quad" style="background:#ffffff"></div>
+            <div class="preview-quad" style="background:#ffffff"></div>
           </div>
         </div>
         <div class="card__body">
-          <h2 class="card__title" data-i18n="quarters">Четвертинки</h2>
-          <p class="card__desc" data-i18n="quartersDesc">Экран разделён на четыре части, и каждая четверть меняет цвет.</p>
+          <h2 class="card__title" data-i18n="quarters">Клеточки</h2>
+          <p class="card__desc" data-i18n="quartersDesc">Экран разделён на четыре белые клетки. На каждой смене одна или несколько клеток закрашиваются случайным цветом.</p>
           <span class="card__cta" data-i18n="open">Открыть →</span>
         </div>
       </a>
@@ -126,7 +126,7 @@
           </div>
         </div>
         <div class="card__body">
-          <h2 class="card__title" data-i18n="carpetNumbers">Цифры на ковре</h2>
+          <h2 class="card__title" data-i18n="carpetNumbers">Счет 1-10</h2>
           <p class="card__desc" data-i18n="carpetNumbersDesc">На стандартном ковре по очереди появляются цифры от 1 до 10 на случайных четвертях.</p>
           <span class="card__cta" data-i18n="open">Открыть →</span>
         </div>
@@ -134,14 +134,14 @@
 
       <a class="card" data-game="heels" href="games/heels/index.html">
         <div class="card__preview card__preview--white">
-          <div class="preview-pair">
+          <div class="preview-pair preview-pair--feet">
             <span class="preview-mask preview-mask--foot-left"></span>
             <span class="preview-mask preview-mask--foot-right"></span>
           </div>
         </div>
         <div class="card__body">
-          <h2 class="card__title" data-i18n="heels">Пятки</h2>
-          <p class="card__desc" data-i18n="heelsDesc">Как «Ладошки», только с пятками: цвет, сторона и места меняются при каждой смене.</p>
+          <h2 class="card__title" data-i18n="heels">Ножки</h2>
+          <p class="card__desc" data-i18n="heelsDesc">Как «Ладошки», только с ножками: цвет, сторона и места меняются при каждой смене.</p>
           <span class="card__cta" data-i18n="open">Открыть →</span>
         </div>
       </a>
@@ -156,20 +156,77 @@
           </div>
         </div>
         <div class="card__body">
-          <h2 class="card__title" data-i18n="limbs">Руки-ноги</h2>
-          <p class="card__desc" data-i18n="limbsDesc">На стандартном ковре появляются две руки, две ноги или рука и нога — без двух одинаковых сторон.</p>
+          <h2 class="card__title" data-i18n="limbs">Ножки-ладошки</h2>
+          <p class="card__desc" data-i18n="limbsDesc">На стандартном ковре появляются ладошки и ножки — одна конечность или ладошка с ножкой.</p>
           <span class="card__cta" data-i18n="open">Открыть →</span>
         </div>
       </a>
 
-      <a class="card" data-game="static-arrows" href="games/static-arrows/index.html">
-        <div class="card__preview preview-arrows">
-          <span class="preview-arrow preview-arrow--left"></span>
-          <span class="preview-arrow preview-arrow--right"></span>
+      <a class="card" data-game="fence" href="games/fence/index.html">
+        <div class="card__preview card__preview--white">
+          <svg class="preview-fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850.39 850.39">
+            <rect x="109.24" y="144.09" width="81.95" height="562.21" rx="33.97" fill="#E53935"/>
+            <rect x="292.56" y="144.09" width="81.95" height="562.21" rx="33.97" fill="#FDD835"/>
+            <rect x="475.88" y="144.09" width="81.95" height="562.21" rx="33.97" fill="#43A047"/>
+            <rect x="659.2" y="144.09" width="81.95" height="562.21" rx="33.97" fill="#1E88E5"/>
+          </svg>
         </div>
         <div class="card__body">
-          <h2 class="card__title" data-i18n="staticArrows">Статичные стрелочки</h2>
-          <p class="card__desc" data-i18n="staticArrowsDesc">Две стрелочки: левая всегда влево, правая всегда вправо. Меняются только цвета.</p>
+          <h2 class="card__title" data-i18n="fence">Заборчик</h2>
+          <p class="card__desc" data-i18n="fenceDesc">Четыре палочки в ряд. Цвета не повторяются, можно оставить три из четырёх.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="sticks" href="games/sticks/index.html">
+        <div class="card__preview card__preview--white">
+          <svg class="preview-fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850.39 850.39">
+            <rect x="68.27" y="144.09" width="81.95" height="562.21" rx="33.97" fill="#E53935"/>
+            <rect x="384.22" y="472.69" width="81.95" height="562.21" rx="33.97" transform="translate(-328.6 1178.99) rotate(-90)" fill="#FDD835"/>
+            <rect x="384.22" y="-184.51" width="81.95" height="562.21" rx="33.97" transform="translate(328.6 521.8) rotate(-90)" fill="#43A047"/>
+            <rect x="706.3" y="144.09" width="81.95" height="562.21" rx="33.97" fill="#1E88E5"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="sticks">Палочки</h2>
+          <p class="card__desc" data-i18n="sticksDesc">Палочки выкладываются разными фигурами. Цвета не повторяются, фигура поворачивается.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="shapes" href="games/shapes/index.html">
+        <div class="card__preview card__preview--white">
+          <svg class="preview-fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850.39 850.39">
+            <rect x="88" y="305" width="200" height="200" rx="42" fill="#E53935"/>
+            <circle cx="425" cy="405" r="100" fill="#FDD835"/>
+            <path d="M588 330 L690 480 L550 480 Z" fill="#43A047" stroke="#43A047" stroke-width="26" stroke-linejoin="round"/>
+            <circle cx="425" cy="405" r="100" fill="#FDD835" opacity="0"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="shapes">Фигуры</h2>
+          <p class="card__desc" data-i18n="shapesDesc">Квадрат, круг и треугольник разных цветов появляются на экране по очереди.</p>
+          <span class="card__cta" data-i18n="open">Открыть →</span>
+        </div>
+      </a>
+
+      <a class="card" data-game="fly" href="games/fly/index.html">
+        <div class="card__preview">
+          <div class="preview-fly">
+            <div class="preview-fly__cell preview-fly__cell--dot"></div>
+            <div class="preview-fly__cell"></div>
+            <div class="preview-fly__cell"></div>
+            <div class="preview-fly__cell"></div>
+            <div class="preview-fly__cell preview-fly__cell--fly"><img src="assets/fly/muha.svg" alt=""></div>
+            <div class="preview-fly__cell"></div>
+            <div class="preview-fly__cell"></div>
+            <div class="preview-fly__cell"></div>
+            <div class="preview-fly__cell"></div>
+          </div>
+        </div>
+        <div class="card__body">
+          <h2 class="card__title" data-i18n="fly">Муха</h2>
+          <p class="card__desc" data-i18n="flyDesc">Муха сидит в центре, а красный кружок показывает, в какой клетке её искать.</p>
           <span class="card__cta" data-i18n="open">Открыть →</span>
         </div>
       </a>
@@ -182,9 +239,22 @@
       </div>
 
       <div class="plans__cards">
+        <div class="plan-card" data-plan="twoWeeks">
+          <div class="plan-card__badge" data-i18n="planTwoWeeks">2 недели</div>
+          <div class="plan-card__price">250 <span data-i18n="rub">₽</span></div>
+          <ul class="plan-card__feats">
+            <li data-i18n="featAll">Все интерактивы без ограничений</li>
+            <li data-i18n="featNew">Новые игры по мере выхода</li>
+            <li data-i18n="featUpdates">Обновления и новые режимы</li>
+            <li data-i18n="featAuto">Автопродление не требуется</li>
+          </ul>
+          <button type="button" class="plan-card__btn" data-buy="twoWeeks" data-i18n="buyPlan">Оформить подписку</button>
+        </div>
+
         <div class="plan-card" data-plan="month">
           <div class="plan-card__badge" data-i18n="planMonth">1 месяц</div>
-          <div class="plan-card__price">350 <span data-i18n="rub">₽</span></div>
+          <div class="plan-card__price">400 <span data-i18n="rub">₽</span></div>
+          <p class="plan-card__benefit" data-i18n="monthBenefit">Выгода 100 ₽ по сравнению с «2 недели»</p>
           <ul class="plan-card__feats">
             <li data-i18n="featAll">Все интерактивы без ограничений</li>
             <li data-i18n="featNew">Новые игры по мере выхода</li>
@@ -194,20 +264,34 @@
           <button type="button" class="plan-card__btn" data-buy="month" data-i18n="buyPlan">Оформить подписку</button>
         </div>
 
-        <div class="plan-card plan-card--featured" data-plan="forever">
-          <div class="plan-card__badge" data-i18n="planForever">Навсегда</div>
-          <div class="plan-card__price">2 700 <span data-i18n="rub">₽</span></div>
+        <div class="plan-card" data-plan="halfYear">
+          <div class="plan-card__badge" data-i18n="planHalfYear">полгода</div>
+          <div class="plan-card__price">2 500 <span data-i18n="rub">₽</span></div>
+          <p class="plan-card__benefit" data-i18n="halfYearBenefit">Выгода 500 ₽ по сравнению с «2 недели»</p>
           <ul class="plan-card__feats">
             <li data-i18n="featAll">Все интерактивы без ограничений</li>
             <li data-i18n="featNew">Новые игры по мере выхода</li>
             <li data-i18n="featUpdates">Обновления и новые режимы</li>
-            <li data-i18n="featLifetime">Одноразовый платёж навсегда</li>
+            <li data-i18n="featAuto">Автопродление не требуется</li>
           </ul>
-          <button type="button" class="plan-card__btn" data-buy="forever" data-i18n="buyPlan">Оформить подписку</button>
+          <button type="button" class="plan-card__btn" data-buy="halfYear" data-i18n="buyPlan">Оформить подписку</button>
+        </div>
+
+        <div class="plan-card plan-card--featured" data-plan="year">
+          <div class="plan-card__badge" data-i18n="planYear">1 год</div>
+          <div class="plan-card__price">4 000 <span data-i18n="rub">₽</span></div>
+          <p class="plan-card__benefit" data-i18n="yearBenefit">Выгода 2 000 ₽ по сравнению с «2 недели»</p>
+          <ul class="plan-card__feats">
+            <li data-i18n="featAll">Все интерактивы без ограничений</li>
+            <li data-i18n="featNew">Новые игры по мере выхода</li>
+            <li data-i18n="featUpdates">Обновления и новые режимы</li>
+            <li data-i18n="featAuto">Автопродление не требуется</li>
+          </ul>
+          <button type="button" class="plan-card__btn" data-buy="year" data-i18n="buyPlan">Оформить подписку</button>
         </div>
       </div>
 
-      <p class="plans__note" data-i18n="plansNote">Оплата через сервис ЮKassa: банковские карты, СБП, электронные кошельки. Деньги вернём, если что-то не подойдёт — условия в Пользовательском соглашении.</p>
+      <p class="plans__note" data-i18n="plansNote">Оплата через сервис ЮKassa: банковские карты, СБП, электронные кошельки. Тарифы и условия — в Пользовательском соглашении.</p>
     </section>
   </div>
 

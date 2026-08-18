@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Фигуры — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    #shape {
+      width: min(46%, 380px);
+      height: min(70%, 380px);
+      max-width: 380px;
+      max-height: 70%;
+      color: #E53935;
+      overflow: visible;
+    }
+
+    #shape svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div id="shape"></div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const SHAPES = ['square', 'circle', 'triangle'];
+    const shape = document.getElementById('shape');
+    let pool = [];
+    let allowTriangle = false;
+    let repeat = false;
+
+    function shapeSvg(key) {
+      if (key === 'circle') {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" overflow="visible"><style>.a{fill:currentColor}</style><circle class="a" cx="250" cy="250" r="190"/></svg>';
+      }
+      if (key === 'triangle') {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" overflow="visible"><style>.a{fill:currentColor}</style><path class="a" d="M250 70 L435 370 L65 370 Z" stroke="currentColor" stroke-width="80" stroke-linejoin="round"/></svg>';
+      }
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" overflow="visible"><style>.a{fill:currentColor}</style><rect class="a" x="60" y="60" width="380" height="380" rx="84"/></svg>';
+    }
+
+    function allowedShapes() {
+      return allowTriangle ? SHAPES.slice() : ['square', 'circle'];
+    }
+
+    function nextPick() {
+      if (repeat) {
+        return { shape: randomItem(allowedShapes()), color: randomColorKey() };
+      }
+      if (!pool.length) {
+        allowedShapes().forEach(function (key) {
+          COLOR_KEYS.forEach(function (color) {
+            pool.push({ shape: key, color: color });
+          });
+        });
+        pool = shuffle(pool);
+      }
+      return pool.pop();
+    }
+
+    function tick(silent) {
+      triggerChangeAnimation(shape, silent);
+      const pick = nextPick();
+      shape.style.color = IGRO_COLORS[pick.color];
+      shape.innerHTML = shapeSvg(pick.shape);
+    }
+
+    mountGameShell({
+      gameId: 'shapes',
+      titleKey: 'shapes',
+      tick: tick,
+      reset: function () {
+        shape.innerHTML = '';
+        pool = [];
+      },
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(startCol, {
+          leftKey: 'shapesTwo',
+          rightKey: 'shapesThree',
+          checked: false,
+          onChange: function (checked) {
+            allowTriangle = checked;
+            pool = [];
+            if (Interactive.active) tick(false);
+          },
+        });
+        createPairSwitch(endCol, {
+          leftKey: 'shapesUnique',
+          rightKey: 'shapesRepeat',
+          checked: false,
+          onChange: function (checked) {
+            repeat = checked;
+            pool = [];
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+      methodica:
+        '<p>На экране появляются квадрат, круг и треугольник разных цветов. Фигуры не повторяются, пока не закончатся все варианты.</p>' +
+        '<ul>' +
+        '<li>Просите ребёнка называть фигуру и цвет на экране.</li>' +
+        '<li>Пусть ребёнок находит такую же фигуру среди игрушек или карточек.</li>' +
+        '<li>Просите нарисовать фигуру пальчиком в воздухе или на бумаге.</li>' +
+        '<li>Собирайте башню из кубиков по образцу: какого цвета фигура на экране.</li>' +
+        '<li>Называйте фигуру — ребёнок показывает её на экране или находит в комнате.</li>' +
+        '<li>Режим «фигуры не повторяются» — угадайте, какая фигура будет следующей.</li>' +
+        '</ul>',
+    });
+  </script>
+</body>
+</html>

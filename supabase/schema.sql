@@ -8,7 +8,7 @@ create table if not exists public.users (
   id            uuid primary key default gen_random_uuid(),
   login         text not null unique,
   password_hash text not null,
-  subscription  text check (subscription in ('month', 'forever')) default null,
+  subscription  text check (subscription in ('twoWeeks', 'month', 'halfYear', 'year', 'forever')) default null,
   is_admin      boolean not null default false,
   expires_at    timestamptz default null,
   created_at    timestamptz not null default now()

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Палочки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .figure-box {
+      width: min(58%, 420px);
+      height: min(92%, 480px);
+      max-width: 420px;
+      max-height: 92%;
+      overflow: visible;
+    }
+
+    .figure-box svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="figure-box" id="figure"></div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const STICK_URLS = Array.from({ length: 8 }, function (_, i) {
+      return '../../assets/sticks/stik' + (i + 1) + '.svg';
+    });
+    const ROTATIONS = [0, 90, 180, 270];
+    const fig = document.getElementById('figure');
+    let currentUrl = '';
+
+    function tick(silent) {
+      triggerChangeAnimation(fig, silent);
+      const url = randomItem(STICK_URLS);
+      const rotation = randomItem(ROTATIONS);
+      currentUrl = url;
+      return loadAsset(url).then(function (text) {
+        if (currentUrl !== url) return;
+        fig.innerHTML = text;
+        prepareSvg(fig, 0);
+        paintSticksSvg(fig, shuffle(COLOR_KEYS.slice()));
+        fig.style.transform = 'rotate(' + rotation + 'deg)';
+      });
+    }
+
+    mountGameShell({
+      gameId: 'sticks',
+      titleKey: 'sticks',
+      tick: tick,
+      reset: function () {
+        fig.innerHTML = '';
+        fig.style.transform = '';
+      },
+      methodica:
+        '<p>Четыре палочки основных цветов располагаются по-разному: они складываются в фигуры и поворачиваются. Задача ребёнка — успеть повторить рисунок.</p>' +
+        '<ul>' +
+        '<li>Повторяйте фигуру настоящими палочками на столе.</li>' +
+        '<li>Пусть ребёнок запомнит расположение палочек и выложит такое же по памяти.</li>' +
+        '<li>Спрашивайте, какие цвета стоят рядом, а какие — напротив.</li>' +
+        '<li>Играйте на скорость: кто быстрее соберёт такую же фигуру.</li>' +
+        '<li>Поверните фигуру на экране — предложите повернуть и свои палочки.</li>' +
+        '<li>Придумывайте свои фигуры из тех же палочек.</li>' +
+        '</ul>',
+    });
+  </script>
+</body>
+</html>

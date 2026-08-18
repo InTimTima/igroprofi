@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Руки-ноги — igroprofi</title>
+  <title>Ножки-ладошки — igroprofi</title>
   <link rel="stylesheet" href="../../css/game-common.css">
   <style>
     #stage {
@@ -17,6 +17,12 @@
       max-height: none;
       transform: scale(1.85);
       transform-origin: center center;
+    }
+
+    @media (max-width: 760px) {
+      .quad .limb--hand {
+        transform: scale(1.48);
+      }
     }
   </style>
 </head>
@@ -52,27 +58,13 @@
     const stage = document.getElementById('stage');
     const quads = Array.from(document.querySelectorAll('.quad'));
     const WHITE = '#ffffff';
+    let bothMode = false;
 
-    function pickLimbPair() {
-      const mode = randomItem(['hands', 'feet', 'mixed']);
-      if (mode === 'hands') {
-        const sides = shuffle(['left', 'right']);
-        return [
-          { kind: 'hand', side: sides[0] },
-          { kind: 'hand', side: sides[1] },
-        ];
-      }
-      if (mode === 'feet') {
-        const sides = shuffle(['left', 'right']);
-        return [
-          { kind: 'foot', side: sides[0] },
-          { kind: 'foot', side: sides[1] },
-        ];
-      }
-      return [
-        { kind: 'hand', side: randomItem(['left', 'right']) },
-        { kind: 'foot', side: randomItem(['left', 'right']) },
-      ];
+    function buildLimb(kind, side) {
+      const el = document.createElement('div');
+      el.className = 'limb' + (kind === 'hand' ? ' limb--hand' : '');
+      paintAsset(el, ASSETS[kind][side], WHITE, { pad: 0 });
+      return el;
     }
 
     function tick(silent) {
@@ -82,12 +74,17 @@
       });
 
       const slots = shuffle([0, 1, 2, 3]);
-      pickLimbPair().forEach(function (limb, index) {
-        const el = document.createElement('div');
-        el.className = 'limb';
-        paintAsset(el, ASSETS[limb.kind][limb.side], WHITE, { pad: 0 });
-        quads[slots[index]].appendChild(el);
-      });
+      if (!bothMode) {
+        const kind = randomItem(['hand', 'foot']);
+        const side = randomItem(['left', 'right']);
+        quads[slots[0]].appendChild(buildLimb(kind, side));
+        return;
+      }
+
+      const hand = buildLimb('hand', randomItem(['left', 'right']));
+      const foot = buildLimb('foot', randomItem(['left', 'right']));
+      quads[slots[0]].appendChild(hand);
+      quads[slots[1]].appendChild(foot);
     }
 
     mountGameShell({
@@ -99,6 +96,27 @@
           quad.innerHTML = '';
         });
       },
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'oneLimb',
+          rightKey: 'bothLimb',
+          checked: false,
+          onChange: function (checked) {
+            bothMode = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+      methodica:
+        '<p>На цветном ковре появляются ладошки и ножки — одна конечность или ладошка с ножкой.</p>' +
+        '<ul>' +
+        '<li>Просите ребёнка показать, где ладошка, а где ножка.</li>' +
+        '<li>Пусть ребёнок покажет левую и правую руку или ногу по образцу на экране.</li>' +
+        '<li>Называйте цвет четверти — ребёнок находит её на ковре перед собой.</li>' +
+        '<li>Встаньте на коврик или пол с такими же метками и повторяйте картинку с экрана.</li>' +
+        '<li>Режим «одна рука или нога» — учим различать конечности и стороны по очереди.</li>' +
+        '<li>Режим «и рука и нога» — учим одновременно выполнять два действия.</li>' +
+        '</ul>',
     });
   </script>
 </body>

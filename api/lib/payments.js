@@ -4,13 +4,17 @@ const crypto = require('crypto');
 const YOOKASSA_API = 'https://api.yookassa.ru/v3';
 
 const PRICES = {
-  month: '350.00',
-  forever: '2700.00',
+  twoWeeks: '250.00',
+  month: '400.00',
+  halfYear: '2500.00',
+  year: '4000.00',
 };
 
 const DESCRIPTIONS = {
+  twoWeeks: 'Подписка igroprofi — 2 недели',
   month: 'Подписка igroprofi — 1 месяц',
-  forever: 'Подписка igroprofi — навсегда',
+  halfYear: 'Подписка igroprofi — полгода',
+  year: 'Подписка igroprofi — 1 год',
 };
 
 function config() {

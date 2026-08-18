@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Муха — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .fly-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
+      padding: 12px;
+      width: min(92%, 90vh);
+      height: 88%;
+      min-height: 0;
+      background: #ffffff;
+    }
+
+    .fly-cell {
+      position: relative;
+      border: 3px solid #e8f7f6;
+      border-radius: 18px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .fly-cell--center img {
+      width: 82%;
+      height: 82%;
+      object-fit: contain;
+    }
+
+    .fly-dot {
+      width: 32%;
+      height: 32%;
+      background: #e53935;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      animation: dot-pop 0.4s ease;
+    }
+
+    @keyframes dot-pop {
+      0% { transform: scale(0.4); opacity: 0.3; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="fly-grid" id="fly-grid"></div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const OUTER = [0, 1, 2, 3, 5, 6, 7, 8];
+    const grid = document.getElementById('fly-grid');
+    const cells = [];
+    let dot = null;
+    let visited = [];
+    let repeat = false;
+
+    for (let i = 0; i < 9; i += 1) {
+      const cell = document.createElement('div');
+      cell.className = 'fly-cell' + (i === 4 ? ' fly-cell--center' : '');
+      if (i === 4) {
+        const img = document.createElement('img');
+        img.src = '../../assets/fly/muha.svg';
+        img.alt = 'fly';
+        cell.appendChild(img);
+      }
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+
+    function nextCellIndex() {
+      if (repeat) return randomItem(OUTER);
+      if (!visited.length) visited = shuffle(OUTER.slice());
+      return visited.pop();
+    }
+
+    function tick(silent) {
+      triggerChangeAnimation(grid, silent);
+      if (dot) dot.remove();
+      const index = nextCellIndex();
+      dot = document.createElement('div');
+      dot.className = 'fly-dot';
+      cells[index].appendChild(dot);
+    }
+
+    mountGameShell({
+      gameId: 'fly',
+      titleKey: 'fly',
+      tick: tick,
+      reset: function () {
+        if (dot) {
+          dot.remove();
+          dot = null;
+        }
+        visited = [];
+      },
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'cellsUnique',
+          rightKey: 'cellsRepeat',
+          checked: false,
+          onChange: function (checked) {
+            repeat = checked;
+            visited = [];
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+      methodica:
+        '<p>На поле из девяти клеток сидит муха. Красный кружок показывает, в какой клетке её искать.</p>' +
+        '<ul>' +
+        '<li>Просите ребёнка показать, где села муха, и назвать клетку (ряд, столбик, цвет).</li>' +
+        '<li>Пусть ребёнок передвигает настоящую игрушку-муху по ковру в ту же клетку.</li>' +
+        '<li>Спрашивайте: муха улетела вверх, вниз, влево или вправо от центра?</li>' +
+        '<li>Помогите ребёнку понять понятия «ряд», «столбик», «уголок».</li>' +
+        '<li>Режим «клеточки не повторяются» — следите, чтобы муха не возвращалась, пока не облетит всё поле.</li>' +
+        '<li>Прячьте предмет в комнате и ищите его по подсказкам, как муху на поле.</li>' +
+        '</ul>',
+    });
+  </script>
+</body>
+</html>

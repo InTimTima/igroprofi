@@ -1,16 +1,14 @@
 const PLANS = {
-  month: { price: '350', labelKey: 'planMonth' },
-  forever: { price: '2 700', labelKey: 'planForever' },
+  twoWeeks: { price: '250', labelKey: 'planTwoWeeks', descKey: 'twoWeeksDesc' },
+  month: { price: '400', labelKey: 'planMonth', descKey: 'monthDesc', benefitKey: 'monthBenefit' },
+  halfYear: { price: '2 500', labelKey: 'planHalfYear', descKey: 'halfYearDesc', benefitKey: 'halfYearBenefit' },
+  year: { price: '4 000', labelKey: 'planYear', descKey: 'yearDesc', benefitKey: 'yearBenefit' },
 };
 
 const PAY_I18N = {
   ru: {
     paymentTitle: 'Оформление подписки',
     plan: 'Тариф',
-    planMonth: '1 месяц',
-    planForever: 'Навсегда',
-    monthDesc: '30 дней полного доступа ко всем интерактивам',
-    foreverDesc: 'Безлимитный доступ навсегда, без повторных платежей',
     featsTitle: 'Что входит в подписку',
     featAll: 'Все интерактивы без ограничений',
     featNew: 'Новые игры по мере выхода',
@@ -39,10 +37,6 @@ const PAY_I18N = {
   en: {
     paymentTitle: 'Checkout',
     plan: 'Plan',
-    planMonth: '1 month',
-    planForever: 'Forever',
-    monthDesc: '30 days of full access to all activities',
-    foreverDesc: 'Lifetime access, no recurring payments',
     featsTitle: 'What the subscription includes',
     featAll: 'All activities without limits',
     featNew: 'New games as they come out',
@@ -73,7 +67,10 @@ const PAY_I18N = {
 function pt(key) {
   const lang = typeof getLang === 'function' ? getLang() : 'ru';
   const pack = PAY_I18N[lang] || PAY_I18N.ru;
-  return pack[key] || PAY_I18N.ru[key] || key;
+  const value = pack[key];
+  if (value != null) return value;
+  if (typeof t === 'function') return t(key);
+  return PAY_I18N.ru[key] || key;
 }
 
 let paymentStep = 'choose';
@@ -81,8 +78,7 @@ let paymentPlan = 'month';
 let pendingPaymentPlan = null;
 
 function buildFeatList(plan) {
-  const base = ['featAll', 'featNew', 'featUpdates'];
-  const keys = plan === 'forever' ? base.concat(['featSupport']) : base.slice(0, 2);
+  const keys = ['featAll', 'featNew', 'featUpdates'];
   return keys.map((k) => '<li>' + pt(k) + '</li>').join('');
 }
 
@@ -102,6 +98,7 @@ function ensurePaymentModal() {
       '<div class="pay-plan">' +
       '<div class="pay-plan__head"><span class="pay-plan__name" id="pay-plan-name"></span><span class="pay-plan__price" id="pay-plan-price"></span></div>' +
       '<p class="pay-plan__desc" id="pay-plan-desc"></p>' +
+      '<p class="pay-plan__benefit" id="pay-plan-benefit"></p>' +
       '<ul class="pay-plan__feats" id="pay-plan-feats"></ul>' +
       '</div>' +
       '<label class="auth-field"><span id="pay-email-label"></span><input id="pay-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></label>' +
@@ -175,7 +172,16 @@ function fillPaymentTexts() {
   setText('pay-title', pt('paymentTitle'));
   setText('pay-plan-name', pt(plan.labelKey));
   setText('pay-plan-price', plan.price + ' ' + pt('rub'));
-  setText('pay-plan-desc', pt(paymentPlan === 'forever' ? 'foreverDesc' : 'monthDesc'));
+  setText('pay-plan-desc', pt(plan.descKey));
+  const benefit = document.getElementById('pay-plan-benefit');
+  if (benefit) {
+    if (plan.benefitKey) {
+      benefit.textContent = pt(plan.benefitKey);
+      benefit.hidden = false;
+    } else {
+      benefit.hidden = true;
+    }
+  }
   const feats = document.getElementById('pay-plan-feats');
   if (feats) feats.innerHTML = buildFeatList(paymentPlan);
   setText('pay-email-label', pt('emailLabel'));

@@ -6,6 +6,14 @@ const db = require('./db.js');
 const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 const ADMIN_LOGIN = 'igroprofi';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const PLAN_DAYS = {
+  twoWeeks: 14,
+  month: 30,
+  halfYear: 183,
+  year: 365,
+};
+
 function isAdmin(user) {
   return !!(user && (user.is_admin === true || user.login === ADMIN_LOGIN));
 }
@@ -102,27 +110,23 @@ async function requireUser(req) {
 }
 
 // Активация подписки в базе (вызывается после подтверждённого платежа).
-// Идемпотентно: продление месяца от текущей даты или от конца текущей подписки.
+// Идемпотентно: продление тарифа от текущей даты или от конца активной подписки.
 async function activateSubscription(userId, plan) {
-  if (plan !== 'month' && plan !== 'forever') return;
+  const days = PLAN_DAYS[plan];
+  if (!days) return;
   const rows = await db.select('users', db.eq('id', userId));
   const user = rows[0];
   if (!user) return;
 
-  if (plan === 'forever') {
-    await db.update('users', db.eq('id', userId), { subscription: 'forever', expires_at: null });
-    return;
-  }
-
   const now = Date.now();
   let base = now;
-  if (user.subscription === 'month' && user.expires_at) {
+  if (user.subscription && PLAN_DAYS[user.subscription] && user.expires_at) {
     const exp = new Date(user.expires_at).getTime();
     if (exp > now) base = exp;
   }
   await db.update('users', db.eq('id', userId), {
-    subscription: 'month',
-    expires_at: new Date(base + SESSION_MS).toISOString(),
+    subscription: plan,
+    expires_at: new Date(base + days * DAY_MS).toISOString(),
   });
 }
 

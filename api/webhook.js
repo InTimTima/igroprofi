@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     const payment = await payments.getPayment(paymentId);
     if (payment.status === 'succeeded') {
       const meta = payment.metadata || {};
-      if (meta.userId && (meta.plan === 'month' || meta.plan === 'forever')) {
+      if (meta.userId && payments.PRICES[meta.plan]) {
         await auth.activateSubscription(meta.userId, meta.plan);
       }
     }

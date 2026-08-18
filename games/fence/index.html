@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заборчик — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .figure-box {
+      width: min(46%, 360px);
+      height: min(88%, 460px);
+      max-width: 360px;
+      max-height: 88%;
+      overflow: visible;
+    }
+
+    .figure-box svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+
+  <div class="game">
+    <div class="game__stage game__stage--art" id="stage">
+      <div class="figure-box" id="figure"></div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const STICK_URL = '../../assets/sticks/stik1.svg';
+    const fig = document.getElementById('figure');
+    let threeMode = false;
+    let currentUrl = '';
+
+    function render() {
+      const url = STICK_URL;
+      const colors = shuffle(COLOR_KEYS.slice());
+      currentUrl = url;
+      return loadAsset(url).then(function (text) {
+        if (currentUrl !== url) return;
+        fig.innerHTML = text;
+        prepareSvg(fig, 0);
+        paintSticksSvg(fig, colors);
+        const rects = fig.querySelectorAll('rect');
+        rects.forEach(function (rect) {
+          rect.style.display = '';
+        });
+        if (threeMode) {
+          rects[randomInt(0, rects.length - 1)].style.display = 'none';
+        }
+      });
+    }
+
+    function tick(silent) {
+      triggerChangeAnimation(fig, silent);
+      return render();
+    }
+
+    mountGameShell({
+      gameId: 'fence',
+      titleKey: 'fence',
+      tick: tick,
+      reset: function () {
+        fig.innerHTML = '';
+      },
+      setupControls: function (startCol, endCol) {
+        createPairSwitch(endCol, {
+          leftKey: 'threeSticks',
+          rightKey: 'fourSticks',
+          checked: true,
+          onChange: function (checked) {
+            threeMode = !checked;
+            if (Interactive.active) tick(false);
+          },
+        });
+      },
+      methodica:
+        '<p>На экране заборчик из четырёх палочек. Цвета не повторяются, можно оставить три палочки из четырёх.</p>' +
+        '<ul>' +
+        '<li>Просите ребёнка повторить заборчик из настоящих палочек на столе.</li>' +
+        '<li>Стройте заборчик вместе, называя цвета слева направо.</li>' +
+        '<li>Спросите: какого цвета палочка стоит первой, второй, третьей?</li>' +
+        '<li>В режиме трёх палочек спросите, какая палочка пропала и какого она была цвета.</li>' +
+        '<li>Можно перешагивать или перекладывать предметы через заборчик.</li>' +
+        '<li>Просите найти в комнате предмет того же цвета, что и палочка.</li>' +
+        '</ul>',
+    });
+  </script>
+</body>
+</html>

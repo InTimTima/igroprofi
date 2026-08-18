@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Четвертинки — igroprofi</title>
+  <title>Клеточки — igroprofi</title>
   <link rel="stylesheet" href="../../css/game-common.css">
 </head>
 <body>
@@ -26,7 +26,39 @@
   <script>
     const stage = document.getElementById('stage');
     const quads = Array.from(document.querySelectorAll('.quad'));
-    let unique = false;
+    let count = 1;
+
+    function createCountControl(container) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'control-group';
+
+      const label = document.createElement('label');
+      label.className = 'control-label';
+      label.textContent = t('squares');
+
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = '1';
+      slider.max = '4';
+      slider.step = '1';
+      slider.value = '1';
+
+      const ticks = document.createElement('div');
+      ticks.className = 'speed-ticks';
+      [1, 2, 3, 4].forEach(function (value) {
+        const tick = document.createElement('span');
+        tick.textContent = String(value);
+        ticks.appendChild(tick);
+      });
+
+      slider.addEventListener('input', function () {
+        count = Number(slider.value);
+        if (Interactive.active) tick(false);
+      });
+
+      wrapper.append(label, slider, ticks);
+      container.appendChild(wrapper);
+    }
 
     function tick(silent) {
       if (!silent) {
@@ -39,9 +71,12 @@
           quad.classList.add('flash-bg');
         });
       }
-      const colors = pickColors(4, unique);
-      quads.forEach(function (quad, i) {
-        quad.style.backgroundColor = IGRO_COLORS[colors[i]];
+      quads.forEach(function (quad) {
+        quad.style.backgroundColor = '#ffffff';
+      });
+      const chosen = shuffle([0, 1, 2, 3]).slice(0, count);
+      chosen.forEach(function (index) {
+        quads[index].style.backgroundColor = IGRO_COLORS[randomColorKey()];
       });
     }
 
@@ -51,20 +86,22 @@
       tick: tick,
       reset: function () {
         quads.forEach(function (quad) {
-          quad.style.backgroundColor = '';
+          quad.style.backgroundColor = '#ffffff';
         });
       },
       setupControls: function (startCol, endCol) {
-        createPairSwitch(endCol, {
-          leftKey: 'colorsRepeat',
-          rightKey: 'colorsUnique',
-          checked: false,
-          onChange: function (checked) {
-            unique = checked;
-            if (Interactive.active) tick(false);
-          },
-        });
+        createCountControl(startCol);
       },
+      methodica:
+        '<p>На экране четыре белые клетки. При каждой смене одна или несколько клеток закрашиваются случайным цветом.</p>' +
+        '<ul>' +
+        '<li>Покажите ребёнку, какие клетки изменились, и назовите их цвета.</li>' +
+        '<li>Просите ребёнка найти все клетки одного цвета и накрыть их ладошкой.</li>' +
+        '<li>Называйте цвет, а ребёнок показывает на соответствующую клетку.</li>' +
+        '<li>Спрашивайте, сколько клеток закрасилось на этот раз, и учите считать.</li>' +
+        '<li>Положите перед ребёнком предметы в цветах экрана — пусть берёт предмет того цвета, который закрашен.</li>' +
+        '<li>Выполняйте движения по цвету клетки: красный — хлопаем, синий — топаем, жёлтый — приседаем, зелёный — прыгаем.</li>' +
+        '</ul>',
     });
   </script>
 </body>

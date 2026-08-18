@@ -32,7 +32,7 @@ const I18N = {
     start: 'Старт',
     stop: 'Стоп',
     super: 'Супер!',
-    cheer: 'ура! ты молодец!',
+    cheer: 'Ура! Какой ты молодец!',
     lang: 'EN',
     color: 'Цвет',
     colorDesc: 'Экран заливается одним из четырёх цветов. Фон меняется автоматически с настраиваемой скоростью.',
@@ -42,46 +42,71 @@ const I18N = {
     arrowsDesc: 'Стрелка случайного направления и цвета появляется на экране. Есть режим двух стрелочек и только вправо-влево.',
     halves: 'Половинки',
     halvesDesc: 'Экран разделён пополам — каждая половина меняет цвет независимо друг от друга.',
-    quarters: 'Четвертинки',
-    quartersDesc: 'Экран разделён на четыре части, и каждая четверть меняет цвет.',
+    quarters: 'Клеточки',
+    quartersDesc: 'Экран разделён на четыре белые клетки. На каждой смене одна или несколько клеток закрашиваются случайным цветом.',
     dice: 'Кубики',
     diceDesc: 'На белом фоне появляется кубик с точками от 1 до 6 — каждый раз нового цвета.',
     numbers: 'Цифры',
     numbersDesc: 'Цвет фона меняется, а поверх него появляются цифры от 1 до 5.',
-    carpetNumbers: 'Цифры на ковре',
+    carpetNumbers: 'Счет 1-10',
     carpetNumbersDesc: 'На стандартном ковре по очереди появляются цифры от 1 до 10 на случайных четвертях.',
-    heels: 'Пятки',
-    heelsDesc: 'Как «Ладошки», только с пятками: цвет, сторона и места меняются при каждой смене.',
-    limbs: 'Руки-ноги',
-    limbsDesc: 'На стандартном ковре появляются две руки, две ноги или рука и нога — без двух одинаковых сторон.',
-    staticArrows: 'Статичные стрелочки',
-    staticArrowsDesc: 'Две стрелочки: левая всегда влево, правая всегда вправо. Меняются только цвета.',
+    heels: 'Ножки',
+    heelsDesc: 'Как «Ладошки», только с ножками: цвет, сторона и места меняются при каждой смене.',
+    limbs: 'Ножки-ладошки',
+    limbsDesc: 'На стандартном ковре появляются ладошки и ножки — одна конечность или ладошка с ножкой.',
+    fence: 'Заборчик',
+    fenceDesc: 'Четыре палочки в ряд. Цвета не повторяются, можно оставить три из четырёх.',
+    sticks: 'Палочки',
+    sticksDesc: 'Палочки выкладываются разными фигурами. Цвета не повторяются, фигура поворачивается.',
+    shapes: 'Фигуры',
+    shapesDesc: 'Квадрат, круг и треугольник разных цветов появляются на экране по очереди.',
+    fly: 'Муха',
+    flyDesc: 'Муха сидит в центре, а красный кружок показывает, в какой клетке её искать.',
     oneHand: '1 ладошка',
     twoHands: '2 ладошки',
-    oneHeel: '1 пятка',
-    twoHeels: '2 пятки',
+    oneHeel: '1 ножка',
+    twoHeels: '2 ножки',
     oneArrow: '1 стрелочка',
     twoArrows: '2 стрелочки',
     leftRight: 'вправо-влево',
     fourSides: '4 стороны',
-    colorsRepeat: 'цвета могут повторяться',
-    colorsUnique: 'цвета не могут повторяться',
+    threeSticks: '3 палочки',
+    fourSticks: '4 палочки',
+    legsNoCross: 'без перекреста ног',
+    legsCross: 'с перекрестом ног',
+    oneLimb: 'одна рука или нога',
+    bothLimb: 'и рука и нога',
+    shapesTwo: 'квадрат, круг',
+    shapesThree: 'квадрат, круг, треугольник',
+    shapesRepeat: 'фигуры повторяются',
+    shapesUnique: 'фигуры не повторяются',
+    cellsRepeat: 'клеточки повторяются',
+    cellsUnique: 'клеточки не повторяются',
+    squares: 'Цветных квадратов',
+    colorsRepeat: 'цвета повторяются',
+    colorsUnique: 'цвета не повторяются',
     vertical: 'вертикально',
     horizontal: 'горизонтально',
-    colorsSame: 'цвета могут быть одинаковыми',
-    colorsDifferent: 'цвета не могут быть одинаковыми',
     plansTitle: 'Подписка igroprofi',
     plansSubtitle: 'Полный доступ ко всем интерактивам для занятий и развития',
+    planTwoWeeks: '2 недели',
     planMonth: '1 месяц',
-    planForever: 'Навсегда',
+    planHalfYear: 'полгода',
+    planYear: '1 год',
+    twoWeeksDesc: '14 дней полного доступа ко всем интерактивам',
+    monthDesc: '30 дней полного доступа ко всем интерактивам',
+    halfYearDesc: '183 дня полного доступа ко всем интерактивам',
+    yearDesc: '365 дней полного доступа ко всем интерактивам',
+    monthBenefit: 'Выгода 100 ₽ по сравнению с «2 недели»',
+    halfYearBenefit: 'Выгода 500 ₽ по сравнению с «2 недели»',
+    yearBenefit: 'Выгода 2 000 ₽ по сравнению с «2 недели»',
     featAll: 'Все интерактивы без ограничений',
     featNew: 'Новые игры по мере выхода',
     featUpdates: 'Обновления и новые режимы',
     featAuto: 'Автопродление не требуется',
-    featLifetime: 'Одноразовый платёж навсегда',
     buyPlan: 'Оформить подписку',
     rub: '₽',
-    plansNote: 'Оплата через сервис ЮKassa: банковские карты, СБП, электронные кошельки. Деньги вернём, если что-то не подойдёт — условия в Пользовательском соглашении.',
+    plansNote: 'Оплата через сервис ЮKassa: банковские карты, СБП, электронные кошельки. Тарифы и условия — в Пользовательском соглашении.',
     offerLink: 'Пользовательское соглашение',
     privacyLink: 'Политика конфиденциальности',
   },
@@ -99,7 +124,7 @@ const I18N = {
     start: 'Start',
     stop: 'Stop',
     super: 'Super!',
-    cheer: 'yay! you did great!',
+    cheer: 'Yay! You did great!',
     lang: 'RU',
     color: 'Color',
     colorDesc: 'The screen fills with one of four colors and changes automatically at a chosen speed.',
@@ -109,46 +134,71 @@ const I18N = {
     arrowsDesc: 'An arrow of a random direction and color appears on screen. There is a two-arrow mode and a left-right only mode.',
     halves: 'Halves',
     halvesDesc: 'The screen is split in two — each half changes color independently.',
-    quarters: 'Quarters',
-    quartersDesc: 'The screen is split into four parts, and each quarter changes color.',
+    quarters: 'Cells',
+    quartersDesc: 'The screen is split into four white cells. On each change, one or more cells get a random color.',
     dice: 'Dice',
     diceDesc: 'A die with 1 to 6 dots appears on a white background, in one of four colors.',
     numbers: 'Numbers',
     numbersDesc: 'The background color changes while numbers from 1 to 5 appear on top.',
-    carpetNumbers: 'Numbers on the carpet',
+    carpetNumbers: 'Counting 1-10',
     carpetNumbersDesc: 'On the standard carpet, numbers from 1 to 10 appear one by one in random quarters.',
-    heels: 'Heels',
-    heelsDesc: 'Like Hands, but with heels: color, side and places change each time.',
+    heels: 'Feet',
+    heelsDesc: 'Like Hands, but with feet: color, side and places change each time.',
     limbs: 'Hands and feet',
-    limbsDesc: 'On the standard carpet, two hands, two feet, or one of each appear — never two of the same side.',
-    staticArrows: 'Static arrows',
-    staticArrowsDesc: 'Two arrows: the left always points left, the right always points right. Only the colors change.',
+    limbsDesc: 'On the standard carpet, hands and feet appear — one limb, or a hand with a foot.',
+    fence: 'Fence',
+    fenceDesc: 'Four sticks in a row. Colors never repeat, you can leave three of the four.',
+    sticks: 'Sticks',
+    sticksDesc: 'Sticks form different shapes. Colors never repeat, the shape rotates.',
+    shapes: 'Shapes',
+    shapesDesc: 'Square, circle and triangle in different colors appear on screen one by one.',
+    fly: 'Fly',
+    flyDesc: 'The fly sits in the center, and a red circle shows which cell to look for it in.',
     oneHand: '1 hand',
     twoHands: '2 hands',
-    oneHeel: '1 heel',
-    twoHeels: '2 heels',
+    oneHeel: '1 foot',
+    twoHeels: '2 feet',
     oneArrow: '1 arrow',
     twoArrows: '2 arrows',
     leftRight: 'left-right',
     fourSides: '4 sides',
+    threeSticks: '3 sticks',
+    fourSticks: '4 sticks',
+    legsNoCross: 'no crossed legs',
+    legsCross: 'crossed legs',
+    oneLimb: 'one hand or foot',
+    bothLimb: 'a hand and a foot',
+    shapesTwo: 'square, circle',
+    shapesThree: 'square, circle, triangle',
+    shapesRepeat: 'shapes may repeat',
+    shapesUnique: 'shapes never repeat',
+    cellsRepeat: 'cells may repeat',
+    cellsUnique: 'cells never repeat',
+    squares: 'Colored squares',
     colorsRepeat: 'colors may repeat',
     colorsUnique: 'colors cannot repeat',
     vertical: 'vertical',
     horizontal: 'horizontal',
-    colorsSame: 'colors may match',
-    colorsDifferent: 'colors cannot match',
     plansTitle: 'igroprofi subscription',
     plansSubtitle: 'Full access to all activities for lessons and development',
+    planTwoWeeks: '2 weeks',
     planMonth: '1 month',
-    planForever: 'Forever',
+    planHalfYear: '6 months',
+    planYear: '1 year',
+    twoWeeksDesc: '14 days of full access to all activities',
+    monthDesc: '30 days of full access to all activities',
+    halfYearDesc: '183 days of full access to all activities',
+    yearDesc: '365 days of full access to all activities',
+    monthBenefit: 'Save 100 ₽ vs the 2-week plan',
+    halfYearBenefit: 'Save 500 ₽ vs the 2-week plan',
+    yearBenefit: 'Save 2,000 ₽ vs the 2-week plan',
     featAll: 'All activities without limits',
     featNew: 'New games as they come out',
     featUpdates: 'Updates and new modes',
     featAuto: 'No auto-renewal required',
-    featLifetime: 'One-time payment forever',
     buyPlan: 'Get the subscription',
     rub: '₽',
-    plansNote: 'Paid via YooKassa: bank cards, SBP, e-wallets. Money-back if something goes wrong — see the Terms of Service.',
+    plansNote: 'Paid via YooKassa: bank cards, SBP, e-wallets. Plans and terms — see the Terms of Service.',
     offerLink: 'Terms of Service',
     privacyLink: 'Privacy Policy',
   },
@@ -281,6 +331,48 @@ function playBell() {
   }
 }
 
+function playTick() {
+  try {
+    const ctx = getAudio();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const start = ctx.currentTime;
+    tone(ctx, 880, start, 0.12, 'sine', 0.07);
+  } catch (err) {
+    /* ignore */
+  }
+}
+
+function playStartTone() {
+  try {
+    const ctx = getAudio();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const start = ctx.currentTime;
+    tone(ctx, 3136, start, 0.5, 'sine', 0.055);
+    tone(ctx, 4186, start + 0.04, 0.45, 'sine', 0.028);
+  } catch (err) {
+    /* ignore */
+  }
+}
+
+function pickVoice(langPrefix) {
+  try {
+    const voices = window.speechSynthesis.getVoices();
+    const candidates = voices.filter(function (v) {
+      return v.lang && v.lang.toLowerCase().indexOf(langPrefix) === 0;
+    });
+    if (!candidates.length) return null;
+    const preferred = candidates.filter(function (v) {
+      const n = v.name.toLowerCase();
+      return /natural|google|irina|svetlana|milena|katya|arina/.test(n) && !/male|dmitry|dmitri|yuri|yuriy|pavel|daniel|mark/.test(n);
+    });
+    return preferred[0] || candidates[0] || null;
+  } catch (err) {
+    return null;
+  }
+}
+
 function playCheer() {
   try {
     const ctx = getAudio();
@@ -295,8 +387,10 @@ function playCheer() {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(t('cheer'));
       utter.lang = getLang() === 'en' ? 'en-US' : 'ru-RU';
-      utter.pitch = 1.35;
-      utter.rate = 0.95;
+      const voice = pickVoice(getLang() === 'en' ? 'en' : 'ru');
+      if (voice) utter.voice = voice;
+      utter.pitch = 1.15;
+      utter.rate = 0.92;
       utter.volume = 1;
       window.speechSynthesis.speak(utter);
     }
@@ -383,6 +477,7 @@ function beginCountdown() {
     count.hidden = false;
     popCountdown(count, 3);
   }
+  playTick();
   updatePlayBtn();
 
   let n = 3;
@@ -391,6 +486,7 @@ function beginCountdown() {
     n -= 1;
     if (n >= 1) {
       if (count) popCountdown(count, n);
+      playTick();
       Interactive.countdownId = setTimeout(step, 720);
       return;
     }
@@ -400,6 +496,7 @@ function beginCountdown() {
     if (count) count.hidden = true;
     if (mosya) mosya.hidden = false;
     Interactive.active = true;
+    playStartTone();
     if (typeof Interactive.tick === 'function') Interactive.tick(false);
     runLoop(token);
     updatePlayBtn();
@@ -573,6 +670,17 @@ function colorSvg(container, color) {
     if (fill === 'none') return;
     node.setAttribute('fill', color);
     node.style.fill = color;
+  });
+}
+
+// Перекрашивает палочки по отдельности (фигуры из нескольких палочек).
+function paintSticksSvg(container, colors) {
+  const svg = container.querySelector('svg');
+  if (!svg) return;
+  svg.querySelectorAll('style').forEach((style) => style.remove());
+  svg.querySelectorAll('rect').forEach((rect, index) => {
+    rect.removeAttribute('class');
+    rect.setAttribute('fill', IGRO_COLORS[colors[index % colors.length]]);
   });
 }
 

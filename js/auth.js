@@ -80,7 +80,8 @@ const Auth = {
     const user = this._user;
     if (!user || !user.subscription) return false;
     if (user.subscription === 'forever') return true;
-    if (user.subscription === 'month') {
+    const paidPlans = ['twoWeeks', 'month', 'halfYear', 'year'];
+    if (paidPlans.indexOf(user.subscription) !== -1) {
       if (!user.expiresAt || user.expiresAt <= Date.now()) return false;
       return true;
     }
@@ -177,11 +178,13 @@ const Auth = {
     if (user && user.isAdmin) return at('subAdmin');
     if (!user || !user.subscription) return at('subNone');
     if (user.subscription === 'forever') return at('subForever');
-    if (user.subscription === 'month' && user.expiresAt > Date.now()) {
+    const planKeys = { twoWeeks: 'subTwoWeeks', month: 'subMonth', halfYear: 'subHalfYear', year: 'subYear' };
+    const labelKey = planKeys[user.subscription];
+    if (labelKey && user.expiresAt > Date.now()) {
       const until = new Date(user.expiresAt).toLocaleDateString(
         typeof getLang === 'function' && getLang() === 'en' ? 'en-GB' : 'ru-RU'
       );
-      return at('subMonthUntil') + ' ' + until;
+      return at(labelKey) + ' ' + at('subUntil') + ' ' + until;
     }
     return at('subNone');
   },
@@ -205,10 +208,14 @@ const AUTH_I18N = {
     subAdmin: 'Администратор',
     subNone: 'Нет подписки',
     subForever: 'Навсегда',
-    subMonthUntil: 'Месяц до',
-    buyMonth: 'Месяц — 350 ₽',
-    buyForever: 'Навсегда — 2 700 ₽',
-    renewMonth: 'Продлить месяц — 350 ₽',
+    subUntil: 'до',
+    subTwoWeeks: '2 недели',
+    subMonth: 'Месяц',
+    subHalfYear: 'Полгода',
+    subYear: 'Год',
+    buyMonth: 'Месяц — 400 ₽',
+    buyYear: 'Год — 4 000 ₽',
+    renewMonth: 'Продлить месяц — 400 ₽',
     lockedHint: 'Доступно по подписке',
     lockedToast: 'Этот интерактив доступен только с подпиской',
     loginShort: 'Логин от 3 символов',
@@ -237,10 +244,14 @@ const AUTH_I18N = {
     subAdmin: 'Administrator',
     subNone: 'No subscription',
     subForever: 'Forever',
-    subMonthUntil: 'Month until',
-    buyMonth: '1 month — 350 ₽',
-    buyForever: 'Forever — 2,700 ₽',
-    renewMonth: 'Renew month — 350 ₽',
+    subUntil: 'until',
+    subTwoWeeks: '2 weeks',
+    subMonth: 'Month',
+    subHalfYear: '6 months',
+    subYear: '1 year',
+    buyMonth: '1 month — 400 ₽',
+    buyYear: '1 year — 4,000 ₽',
+    renewMonth: 'Renew month — 400 ₽',
     lockedHint: 'Subscription required',
     lockedToast: 'This activity is available with a subscription only',
     loginShort: 'Login must be at least 3 characters',
@@ -447,8 +458,8 @@ function refreshHomeAuthUI() {
     buyMonth.textContent =
       Auth.hasSubscription() && user && user.subscription === 'month' ? at('renewMonth') : at('buyMonth');
   }
-  const buyForever = document.getElementById('buy-forever');
-  if (buyForever) buyForever.textContent = at('buyForever');
+  const buyYear = document.getElementById('buy-year');
+  if (buyYear) buyYear.textContent = at('buyYear');
 }
 
 function ensureAuthModals() {
@@ -486,7 +497,7 @@ function ensureAuthModals() {
       '<div class="profile-row"><span id="profile-sub-label"></span><strong id="profile-sub"></strong></div>' +
       '<p class="auth-modal__note" id="profile-demo-note"></p>' +
       '<button type="button" class="auth-primary" id="buy-month"></button>' +
-      '<button type="button" class="auth-primary auth-primary--alt" id="buy-forever"></button>' +
+      '<button type="button" class="auth-primary auth-primary--alt" id="buy-year"></button>' +
       '<button type="button" class="auth-link" id="profile-logout"></button>' +
       '</div>';
     document.body.appendChild(drawer);
@@ -565,9 +576,9 @@ function ensureAuthModals() {
     }
     openProfileDrawer();
   };
-  document.getElementById('buy-forever').onclick = function () {
+  document.getElementById('buy-year').onclick = function () {
     if (typeof openPaymentModal === 'function') {
-      openPaymentModal('forever');
+      openPaymentModal('year');
       return;
     }
     openProfileDrawer();
