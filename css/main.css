@@ -243,8 +243,9 @@ body {
   grid-template-rows: repeat(3, 1fr);
   gap: 4px;
   padding: 8px;
-  width: 100%;
+  width: auto;
   height: 100%;
+  aspect-ratio: 1;
   background: #ffffff;
 }
 
@@ -594,6 +595,12 @@ body {
   text-align: center;
 }
 
+@media (max-width: 980px) {
+  .plans__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 720px) {
   .home-top-bar {
     top: 0.65rem;
@@ -660,9 +667,9 @@ body {
 
 .plans__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 340px));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .plan-card {

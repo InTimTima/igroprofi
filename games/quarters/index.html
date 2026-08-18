@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Клеточки — igroprofi</title>
   <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    #quads {
+      background: var(--sea-light);
+      gap: 3px;
+      padding: 3px;
+    }
+  </style>
 </head>
 <body>
   <a class="back-btn" href="../../index.html">← Назад</a>
@@ -90,7 +97,7 @@
         });
       },
       setupControls: function (startCol, endCol) {
-        createCountControl(startCol);
+        createCountControl(endCol);
       },
       methodica:
         '<p>На экране четыре белые клетки. При каждой смене одна или несколько клеток закрашиваются случайным цветом.</p>' +

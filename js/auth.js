@@ -213,9 +213,14 @@ const AUTH_I18N = {
     subMonth: 'Месяц',
     subHalfYear: 'Полгода',
     subYear: 'Год',
+    buyTwoWeeks: '2 недели — 250 ₽',
     buyMonth: 'Месяц — 400 ₽',
+    buyHalfYear: 'Полгода — 2 500 ₽',
     buyYear: 'Год — 4 000 ₽',
+    renewTwoWeeks: 'Продлить 2 недели — 250 ₽',
     renewMonth: 'Продлить месяц — 400 ₽',
+    renewHalfYear: 'Продлить полгода — 2 500 ₽',
+    renewYear: 'Продлить год — 4 000 ₽',
     lockedHint: 'Доступно по подписке',
     lockedToast: 'Этот интерактив доступен только с подпиской',
     loginShort: 'Логин от 3 символов',
@@ -249,9 +254,14 @@ const AUTH_I18N = {
     subMonth: 'Month',
     subHalfYear: '6 months',
     subYear: '1 year',
+    buyTwoWeeks: '2 weeks — 250 ₽',
     buyMonth: '1 month — 400 ₽',
+    buyHalfYear: '6 months — 2,500 ₽',
     buyYear: '1 year — 4,000 ₽',
+    renewTwoWeeks: 'Renew 2 weeks — 250 ₽',
     renewMonth: 'Renew month — 400 ₽',
+    renewHalfYear: 'Renew 6 months — 2,500 ₽',
+    renewYear: 'Renew year — 4,000 ₽',
     lockedHint: 'Subscription required',
     lockedToast: 'This activity is available with a subscription only',
     loginShort: 'Login must be at least 3 characters',
@@ -452,14 +462,19 @@ function refreshHomeAuthUI() {
   }
   if (profileSub) profileSub.textContent = Auth.subscriptionLabel();
 
-  const buyMonth = document.getElementById('buy-month');
-  if (buyMonth) {
-    const user = Auth.getCurrentUser();
-    buyMonth.textContent =
-      Auth.hasSubscription() && user && user.subscription === 'month' ? at('renewMonth') : at('buyMonth');
-  }
-  const buyYear = document.getElementById('buy-year');
-  if (buyYear) buyYear.textContent = at('buyYear');
+  const plans = [
+    ['twoweeks', 'twoWeeks', 'buyTwoWeeks', 'renewTwoWeeks'],
+    ['month', 'month', 'buyMonth', 'renewMonth'],
+    ['halfyear', 'halfYear', 'buyHalfYear', 'renewHalfYear'],
+    ['year', 'year', 'buyYear', 'renewYear'],
+  ];
+  const user = Auth.getCurrentUser();
+  plans.forEach(function (entry) {
+    const btn = document.getElementById('buy-' + entry[0]);
+    if (!btn) return;
+    btn.textContent =
+      Auth.hasSubscription() && user && user.subscription === entry[1] ? at(entry[3]) : at(entry[2]);
+  });
 }
 
 function ensureAuthModals() {
@@ -496,7 +511,9 @@ function ensureAuthModals() {
       '<div class="profile-row"><span id="profile-login-label"></span><strong id="profile-login"></strong></div>' +
       '<div class="profile-row"><span id="profile-sub-label"></span><strong id="profile-sub"></strong></div>' +
       '<p class="auth-modal__note" id="profile-demo-note"></p>' +
+      '<button type="button" class="auth-primary" id="buy-twoweeks"></button>' +
       '<button type="button" class="auth-primary" id="buy-month"></button>' +
+      '<button type="button" class="auth-primary" id="buy-halfyear"></button>' +
       '<button type="button" class="auth-primary auth-primary--alt" id="buy-year"></button>' +
       '<button type="button" class="auth-link" id="profile-logout"></button>' +
       '</div>';
@@ -569,20 +586,15 @@ function ensureAuthModals() {
     closeProfileDrawer();
     refreshHomeAuthUI();
   };
-  document.getElementById('buy-month').onclick = function () {
-    if (typeof openPaymentModal === 'function') {
-      openPaymentModal('month');
-      return;
-    }
-    openProfileDrawer();
-  };
-  document.getElementById('buy-year').onclick = function () {
-    if (typeof openPaymentModal === 'function') {
-      openPaymentModal('year');
-      return;
-    }
-    openProfileDrawer();
-  };
+  [['twoweeks', 'twoWeeks'], ['month', 'month'], ['halfyear', 'halfYear'], ['year', 'year']].forEach(function (entry) {
+    document.getElementById('buy-' + entry[0]).onclick = function () {
+      if (typeof openPaymentModal === 'function') {
+        openPaymentModal(entry[1]);
+        return;
+      }
+      openProfileDrawer();
+    };
+  });
 
   fillAuthTexts();
 }

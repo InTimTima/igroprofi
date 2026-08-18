@@ -72,8 +72,6 @@ const I18N = {
     fourSides: '4 стороны',
     threeSticks: '3 палочки',
     fourSticks: '4 палочки',
-    legsNoCross: 'без перекреста ног',
-    legsCross: 'с перекрестом ног',
     oneLimb: 'одна рука или нога',
     bothLimb: 'и рука и нога',
     shapesTwo: 'квадрат, круг',
@@ -164,8 +162,6 @@ const I18N = {
     fourSides: '4 sides',
     threeSticks: '3 sticks',
     fourSticks: '4 sticks',
-    legsNoCross: 'no crossed legs',
-    legsCross: 'crossed legs',
     oneLimb: 'one hand or foot',
     bothLimb: 'a hand and a foot',
     shapesTwo: 'square, circle',
@@ -245,6 +241,10 @@ const Interactive = {
   audio: null,
   lastSoundAt: 0,
   playBtn: null,
+  base: (function () {
+    const path = window.location.pathname || '';
+    return path.indexOf('/games/') !== -1 ? '../../' : '';
+  })(),
 };
 
 function randomColorKey() {
@@ -383,19 +383,41 @@ function playCheer() {
         tone(ctx, freq, start + i * 0.06, 0.5, 'triangle', 0.045);
       });
     }
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(t('cheer'));
-      utter.lang = getLang() === 'en' ? 'en-US' : 'ru-RU';
-      const voice = pickVoice(getLang() === 'en' ? 'en' : 'ru');
-      if (voice) utter.voice = voice;
-      utter.pitch = 1.15;
-      utter.rate = 0.92;
-      utter.volume = 1;
-      window.speechSynthesis.speak(utter);
-    }
+    playCheerVoice();
   } catch (err) {
     /* ignore */
+  }
+}
+
+function playCheerVoice() {
+  try {
+    let audio = Interactive.cheerAudio;
+    if (!audio) {
+      audio = new Audio(Interactive.base + 'assets/voice-cheer.mp3');
+      audio.preload = 'auto';
+      Interactive.cheerAudio = audio;
+    }
+    audio.currentTime = 0;
+    audio.play().catch(function () {});
+  } catch (err) {
+    /* ignore */
+  }
+}
+
+function pickVoice(langPrefix) {
+  try {
+    const voices = window.speechSynthesis.getVoices();
+    const candidates = voices.filter(function (v) {
+      return v.lang && v.lang.toLowerCase().indexOf(langPrefix) === 0;
+    });
+    if (!candidates.length) return null;
+    const preferred = candidates.filter(function (v) {
+      const n = v.name.toLowerCase();
+      return /natural|google|irina|svetlana|milena|katya|arina/.test(n) && !/male|dmitry|dmitri|yuri|yuriy|pavel|daniel|mark/.test(n);
+    });
+    return preferred[0] || candidates[0] || null;
+  } catch (err) {
+    return null;
   }
 }
 
