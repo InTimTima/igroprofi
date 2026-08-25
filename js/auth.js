@@ -522,6 +522,7 @@ function ensureAuthModals() {
       '<button type="button" class="auth-primary" id="buy-halfyear"></button>' +
       '<button type="button" class="auth-primary" id="buy-year"></button>' +
       '<button type="button" class="auth-primary auth-primary--alt" id="buy-forever"></button>' +
+      '<button type="button" class="auth-primary" id="donate-btn" style="background:#fff7e6;border:2px solid #f0b429;color:#8a6d00;margin-top:0.9rem;">❤ Поддержать автора</button>' +
       '<button type="button" class="auth-link" id="profile-logout"></button>' +
       '</div>';
     document.body.appendChild(drawer);

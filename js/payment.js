@@ -321,6 +321,81 @@ function verifyDemoPayment(plan) {
     });
 }
 
+function ensureDonateModal(){
+  var modal=document.getElementById('donate-modal');
+  if(modal) return modal;
+  modal=document.createElement('div');
+  modal.id='donate-modal';
+  modal.className='pay-modal';
+  modal.hidden=true;
+  modal.innerHTML=
+    '<div class="pay-modal__card" role="dialog" aria-modal="true">'+
+    '<button type="button" class="auth-modal__close" id="donate-close"></button>'+
+    '<h2 id="donate-title"></h2>'+
+    '<p class="pay-status" id="donate-text" style="text-align:left;line-height:1.45"></p>'+
+    '<label class="auth-field"><span id="donate-amount-label"></span><input id="donate-amount" type="number" min="1" step="1" inputmode="numeric" placeholder="500"></label>'+
+    '<label class="auth-field"><span id="donate-email-label"></span><input id="donate-email" type="email" placeholder="you@example.com"></label>'+
+    '<label class="pay-agree"><input type="checkbox" id="donate-agree"><span id="donate-agree-text"></span></label>'+
+    '<p class="pay-error" id="donate-error" hidden></p>'+
+    '<button type="button" class="auth-primary" id="donate-submit"></button>'+
+    '<p class="pay-via" id="donate-via"></p>'+
+    '</div>';
+  document.body.appendChild(modal);
+  document.getElementById('donate-close').onclick=closeDonateModal;
+  modal.addEventListener('click', function(e){ if(e.target===modal) closeDonateModal(); });
+  document.getElementById('donate-agree').addEventListener('change', function(){
+    document.getElementById('donate-submit').disabled=!this.checked;
+    var err=document.getElementById('donate-error'); err.hidden=true; err.textContent='';
+  });
+  document.getElementById('donate-submit').onclick=submitDonate;
+  return modal;
+}
+function fillDonateTexts(){
+  var set=function(id,val){ var el=document.getElementById(id); if(el) el.textContent=val; };
+  var html=function(id,val){ var el=document.getElementById(id); if(el) el.innerHTML=val; };
+  set('donate-close', pt('close'));
+  set('donate-title', at('donateTitle')||'Поддержать автора');
+  set('donate-text', at('donateText')||'Если хотите помочь автору — будем очень рады любой поддержке. Спасибо, что вы с нами!');
+  set('donate-amount-label', at('donateAmountLabel')||'Сумма доната (₽)');
+  var amt=document.getElementById('donate-amount'); if(amt) amt.placeholder=at('donateAmountPlaceholder')||'500';
+  set('donate-email-label', pt('emailLabel'));
+  var em=document.getElementById('donate-email'); if(em) em.placeholder=pt('emailPlaceholder');
+  html('donate-agree-text', pt('agreement'));
+  set('donate-submit', at('donatePay')||'Поддержать');
+  set('donate-via', at('donateNote')||'Оплата через ЮKassa. Минимальная сумма — 1 ₽.');
+}
+function openDonateModal(){
+  if(!Auth.isLoggedIn()){ if(typeof openAuthModal==='function') openAuthModal('login'); return; }
+  ensureDonateModal(); fillDonateTexts();
+  var err=document.getElementById('donate-error'); if(err){ err.hidden=true; err.textContent=''; }
+  var agree=document.getElementById('donate-agree'); if(agree) agree.checked=false;
+  var sub=document.getElementById('donate-submit'); if(sub) sub.disabled=true;
+  var amt=document.getElementById('donate-amount'); if(amt) amt.value='';
+  showEl(document.getElementById('donate-modal'));
+}
+function closeDonateModal(){ hideEl(document.getElementById('donate-modal')); }
+function submitDonate(){
+  var agree=document.getElementById('donate-agree');
+  if(!agree.checked){ var e=document.getElementById('donate-error'); e.textContent=pt('requiredAgreement'); e.hidden=false; return; }
+  var amtEl=document.getElementById('donate-amount');
+  var val=amtEl.value.trim().replace(',','.');
+  var num=Number(val);
+  if(!num || isNaN(num) || num<1){ var e2=document.getElementById('donate-error'); e2.textContent='Введите сумму от 1 ₽'; e2.hidden=false; return; }
+  var email=(document.getElementById('donate-email').value||'').trim();
+  var err=document.getElementById('donate-error'); err.hidden=true;
+  Auth.api('/api/create-donation',{method:'POST', body: JSON.stringify({amount: val, email: email||undefined})})
+    .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
+    .then(function(r){
+      if(!r.ok || !r.data || r.data.ok===false) throw new Error(r.data&&r.data.error||'serverError');
+      var d=r.data;
+      if(d.mode==='demo'){ closeDonateModal(); alert(at('donateThanks')||'Спасибо за поддержку!'); return; }
+      if(d.confirmationUrl){ window.location.href=d.confirmationUrl; return; }
+      throw new Error('noUrl');
+    }).catch(function(){ var e3=document.getElementById('donate-error'); e3.textContent=pt('errorText'); e3.hidden=false; });
+}
+window.openDonateModal=openDonateModal;
+window.closeDonateModal=closeDonateModal;
+
 function mountPaymentUI() {
   document.querySelectorAll('[data-buy]').forEach(function (btn) {
     if (btn.dataset.payBound) return;

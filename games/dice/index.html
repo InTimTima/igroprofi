@@ -46,11 +46,42 @@
     };
 
     const dice = document.getElementById('dice');
-
+    const diceWrap = document.createElement('div');
+    diceWrap.id='dice-wrap';
+    diceWrap.style.display='flex'; diceWrap.style.alignItems='center'; diceWrap.style.justifyContent='center'; diceWrap.style.gap='3%'; diceWrap.style.width='100%'; diceWrap.style.height='100%';
+    dice.parentNode.replaceChild(diceWrap, dice);
+    const diceA = document.createElement('div');
+    diceA.id='diceA'; diceA.style.overflow='visible'; diceA.style.flex='none'; diceA.style.width='min(42%,360px)'; diceA.style.height='min(70%,360px)'; diceA.style.color='#E53935';
+    const diceB = document.createElement('div');
+    diceB.id='diceB'; diceB.style.overflow='visible'; diceB.style.flex='none'; diceB.style.display='none';
+    diceWrap.appendChild(diceA); diceWrap.appendChild(diceB);
+    let diceCount = 1;
+    function layoutDice(){
+      if(diceCount===1){
+        diceA.style.display='block'; diceB.style.display='none';
+        diceA.style.width='min(42%,360px)'; diceA.style.height='min(70%,360px)';
+        diceWrap.style.flexDirection='row';
+      } else {
+        diceA.style.display='block'; diceB.style.display='block';
+        if(Math.random()<0.5){ diceA.style.width='min(28%,220px)'; diceA.style.height='min(46%,220px)'; diceB.style.width='min(42%,360px)'; diceB.style.height='min(70%,360px)'; }
+        else { diceA.style.width='min(42%,360px)'; diceA.style.height='min(70%,360px)'; diceB.style.width='min(28%,220px)'; diceB.style.height='min(46%,220px)'; }
+        if(Math.random()<0.5) diceWrap.style.flexDirection='row-reverse'; else diceWrap.style.flexDirection='row';
+      }
+    }
     function tick(silent) {
-      triggerChangeAnimation(dice, silent);
-      dice.style.color = IGRO_COLORS[randomColorKey()];
-      dice.innerHTML = DICE_SVG[randomInt(1, 6)];
+      triggerChangeAnimation(diceWrap, silent);
+      layoutDice();
+      if(diceCount===1){
+        diceA.style.color = IGRO_COLORS[randomColorKey()];
+        diceA.innerHTML = DICE_SVG[randomInt(1, 6)];
+        diceB.innerHTML='';
+      } else {
+        const n1 = randomInt(1,6), n2 = randomInt(1,6);
+        diceA.style.color = IGRO_COLORS[randomColorKey()];
+        diceB.style.color = IGRO_COLORS[randomColorKey()];
+        diceA.innerHTML = DICE_SVG[n1];
+        diceB.innerHTML = DICE_SVG[n2];
+      }
     }
 
     mountGameShell({
@@ -58,7 +89,15 @@
       titleKey: 'dice',
       tick: tick,
       reset: function () {
-        dice.innerHTML = '';
+        diceA.innerHTML = ''; diceB.innerHTML='';
+      },
+      setupControls: function(startCol, endCol){
+        createPairSwitch(endCol, {
+          leftKey: 'oneCube',
+          rightKey: 'twoCubes',
+          checked: false,
+          onChange: function(checked){ diceCount = checked ? 2 : 1; if(Interactive.active) tick(false); }
+        });
       },
       methodica:
         '<p>На белом фоне появляется кубик с точками от 1 до 6 — каждый раз нового цвета.</p>' +

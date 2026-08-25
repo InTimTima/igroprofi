@@ -241,19 +241,19 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 4px;
-  padding: 8px;
+  gap: 6px;
+  padding: 6px;
   width: auto;
   height: 100%;
   aspect-ratio: 1;
-  background: #ffffff;
-  border-radius: 0;
+  background: var(--sea);
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .preview-fly__cell {
   position: relative;
-  border: 1px solid #e8f7f6;
+  border: none;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -269,6 +269,11 @@ body {
   background: #e53935;
   border-radius: 50%;
 }
+
+.preview-fly__cell:nth-child(1) { border-radius: 6px 0 0 0; }
+.preview-fly__cell:nth-child(3) { border-radius: 0 6px 0 0; }
+.preview-fly__cell:nth-child(7) { border-radius: 0 0 0 6px; }
+.preview-fly__cell:nth-child(9) { border-radius: 0 0 6px 0; }
 
 .preview-fly__cell--fly img {
   width: 92%;
