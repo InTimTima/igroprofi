@@ -147,7 +147,7 @@ body {
 }
 
 .preview-pair--feet .preview-mask {
-  transform: scale(1.15);
+  transform: scale(1.38);
 }
 
 .preview-mask {
@@ -241,19 +241,19 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 3px;
-  padding: 3px;
+  gap: 4px;
+  padding: 8px;
   width: auto;
   height: 100%;
   aspect-ratio: 1;
-  background: var(--sea);
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .preview-fly__cell {
   position: relative;
-  border: none;
+  border: 1px solid #e8f7f6;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -276,10 +276,7 @@ body {
   object-fit: contain;
 }
 
-.preview-fly__cell:nth-child(1) { border-radius: 6px 0 0 0; }
-.preview-fly__cell:nth-child(3) { border-radius: 0 6px 0 0; }
-.preview-fly__cell:nth-child(7) { border-radius: 0 0 0 6px; }
-.preview-fly__cell:nth-child(9) { border-radius: 0 0 6px 0; }
+
 
 .preview-number {
   font-size: 4.2rem;
@@ -301,8 +298,15 @@ body {
 }
 
 .preview-quads--gap {
-  gap: 6px;
-  padding: 6px;
+  gap: 8px;
+  padding: 8px;
+  background: var(--sea);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.preview-quads--gap .preview-quad {
+  border-radius: 6px;
+  border: none;
 }
 
 .preview-num {
@@ -616,7 +620,7 @@ body {
 
 @media (max-width: 760px) {
   .preview-pair--feet .preview-mask {
-    transform: scale(1.725);
+    transform: scale(2.07);
   }
 }
 
@@ -691,11 +695,6 @@ body {
   gap: 1rem;
 }
 
-.plan-card--forever {
-  border-color: var(--sea);
-  background: linear-gradient(180deg, #fff7e6 0%, #ffe9b3 100%);
-}
-
 .plan-card {
   display: flex;
   flex-direction: column;
@@ -716,6 +715,18 @@ body {
 .plan-card--featured {
   border-color: var(--sea);
   background: linear-gradient(180deg, #ffffff 0%, var(--sea-light) 100%);
+}
+
+.plan-card--forever {
+  border-color: #f0b429;
+  background: linear-gradient(180deg, #fffbeb 0%, #ffe9b3 100%);
+  box-shadow: 0 10px 36px rgba(240, 180, 41, 0.28);
+  transform: translateY(-2px);
+}
+
+.plan-card--featured.plan-card--forever {
+  border-width: 3px;
+  box-shadow: 0 14px 40px rgba(240, 180, 41, 0.35);
 }
 
 .plan-card__badge {

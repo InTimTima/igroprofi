@@ -40,17 +40,57 @@
       4: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 90 90" overflow="visible"><style>.a{fill:currentColor}.b{fill:#333;stroke:#333;stroke-width:2px}</style><rect class="a" x="48.82" y="48.82" width="72.44" height="72.44" rx="10" ry="10"/><circle class="b" cx="103.2" cy="67.13" r="4.93"/><circle class="b" cx="66.88" cy="67.13" r="4.93"/><circle class="b" cx="103.2" cy="104.54" r="4.93"/><circle class="b" cx="66.88" cy="104.54" r="4.93"/></svg>',
     };
     function squareSvg(n) {
-      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 90 90" overflow="visible"><style>.a{fill:currentColor}</style><rect class="a" x="48.82" y="48.82" width="72.44" height="72.44" rx="10" ry="10"/><text x="85.04" y="93" text-anchor="middle" dominant-baseline="middle" font-family="Gotham Pro, sans-serif" font-size="36" font-weight="700" fill="#333">' + n + '</text></svg>';
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 90 90" overflow="visible"><style>.a{fill:currentColor}</style><rect class="a" x="48.82" y="48.82" width="72.44" height="72.44" rx="10" ry="10"/><text x="85.04" y="86.5" text-anchor="middle" dominant-baseline="middle" font-family="Gotham Pro, sans-serif" font-size="36" font-weight="700" fill="#333">' + n + '</text></svg>';
     }
     const el = document.getElementById('dots');
+    const wrap = document.createElement('div');
+    wrap.id='dots-wrap';
+    wrap.style.display='flex'; wrap.style.alignItems='center'; wrap.style.justifyContent='center'; wrap.style.gap='3%'; wrap.style.width='100%'; wrap.style.height='100%';
+    el.parentNode.replaceChild(wrap, el);
+    const cubeA = document.createElement('div');
+    cubeA.id='cubeA'; cubeA.style.color='#E53935'; cubeA.style.overflow='visible'; cubeA.style.flex='none';
+    const cubeB = document.createElement('div');
+    cubeB.id='cubeB'; cubeB.style.color='#1E88E5'; cubeB.style.overflow='visible'; cubeB.style.flex='none';
+    wrap.appendChild(cubeA); wrap.appendChild(cubeB);
     let mode = 'cubes'; // cubes | squares
+    let cubesCount = 1; // 1 or 2 (only for cubes)
+    function layoutCubes(){
+      if(mode!=='cubes'){ cubeA.style.display=''; cubeB.style.display='none'; cubeA.style.width='min(42%,360px)'; cubeA.style.height='min(70%,360px)'; return; }
+      if(cubesCount===1){
+        cubeA.style.display='block'; cubeB.style.display='none';
+        cubeA.style.width='min(42%,360px)'; cubeA.style.height='min(70%,360px)';
+      } else {
+        cubeA.style.display='block'; cubeB.style.display='block';
+        // small vs big swap each tick
+        if(Math.random()<0.5){ cubeA.style.width='min(28%,220px)'; cubeA.style.height='min(46%,220px)'; cubeB.style.width='min(42%,360px)'; cubeB.style.height='min(70%,360px)'; }
+        else { cubeA.style.width='min(42%,360px)'; cubeA.style.height='min(70%,360px)'; cubeB.style.width='min(28%,220px)'; cubeB.style.height='min(46%,220px)'; }
+        // random order swap positions
+        if(Math.random()<0.5) wrap.style.flexDirection='row-reverse'; else wrap.style.flexDirection='row';
+      }
+    }
     function tick(silent) {
-      triggerChangeAnimation(el, silent);
-      const n = randomInt(1,4);
-      const col = IGRO_COLORS[randomColorKey()];
-      el.style.color = col;
-      if (mode === 'cubes') el.innerHTML = DICE_1_4[n];
-      else el.innerHTML = squareSvg(n);
+      triggerChangeAnimation(wrap, silent);
+      layoutCubes();
+      if(mode==='squares'){
+        const n = randomInt(1,4);
+        cubeA.style.color = IGRO_COLORS[randomColorKey()];
+        cubeA.innerHTML = squareSvg(n);
+        cubeB.innerHTML='';
+      } else {
+        if(cubesCount===1){
+          const n = randomInt(1,4);
+          cubeA.style.color = IGRO_COLORS[randomColorKey()];
+          cubeA.innerHTML = DICE_1_4[n];
+          cubeB.innerHTML='';
+        } else {
+          const n1 = randomInt(1,4), n2 = randomInt(1,4);
+          const c1 = randomColorKey(), c2 = randomColorKey();
+          cubeA.style.color = IGRO_COLORS[c1];
+          cubeB.style.color = IGRO_COLORS[c2];
+          cubeA.innerHTML = DICE_1_4[n1];
+          cubeB.innerHTML = DICE_1_4[n2];
+        }
+      }
     }
     mountGameShell({
       gameId: 'dots',
@@ -63,6 +103,12 @@
           rightKey: 'dotsSquares',
           checked: false,
           onChange: function(checked){ mode = checked ? 'squares' : 'cubes'; if(Interactive.active) tick(false); }
+        });
+        createPairSwitch(endCol, {
+          leftKey: 'oneCube',
+          rightKey: 'twoCubes',
+          checked: false,
+          onChange: function(checked){ cubesCount = checked ? 2 : 1; if(Interactive.active) tick(false); }
         });
       },
       methodica:

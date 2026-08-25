@@ -22,13 +22,13 @@
       align-items: center;
       justify-content: center;
       gap: 4%;
-      width: min(100%, 560px);
+      width: min(100%, 640px);
     }
     .palm {
       position: relative;
-      width: 46%;
+      width: 52%;
       aspect-ratio: 595 / 740;
-      max-width: 240px;
+      max-width: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -51,6 +51,8 @@
       user-select: none;
       text-transform: uppercase;
     }
+    #palm-left .palm-letter { transform: translate(-8%, 10%); }
+    #palm-right .palm-letter { transform: translate(8%, 10%); }
     .triples {
       width: min(100%, 680px);
       display: flex;
@@ -109,14 +111,7 @@
   <script src="../../js/shared.js"></script>
   <script>
     const ALL_VOWELS = ['А','О','У','Ы','И','Э'];
-    const LEVELS = [
-      ['А','О'],
-      ['А','О','У'],
-      ['А','О','У','Ы'],
-      ['А','О','У','Ы','И'],
-      ['А','О','У','Ы','И','Э'],
-    ];
-    let level = 0;
+    let level = 1; // 1 => А,О ; 5 => all
     const palmL = document.getElementById('palm-left');
     const palmR = document.getElementById('palm-right');
     const triplesEl = document.getElementById('triples');
@@ -186,16 +181,25 @@
         triplesEl.appendChild(row);
       }
     }
+    function getActiveLetters(){
+      // level 1..5 inclusive, 1=>А,О up to 5=>all
+      return ALL_VOWELS.slice(0, level+1);
+    }
     function tick(silent){
       const stage=document.getElementById('vowels-stage');
       triggerChangeAnimation(stage, silent);
       ensurePalmLetters();
-      const letters = LEVELS[level];
-      const a = randomItem(letters);
-      const b = randomItem(letters);
+      const letters = getActiveLetters();
+      let a = randomItem(letters);
+      let b = randomItem(letters);
+      // не могут повторяться
+      if(letters.length>1){
+        let attempts=0;
+        while(b===a && attempts<10){ b=randomItem(letters); attempts++; }
+      }
       palmL.querySelector('.palm-letter').textContent = a;
       palmR.querySelector('.palm-letter').textContent = b;
-      renderTriples(letters);
+      renderTriples([a,b]);
     }
     function createVowelSlider(container){
       const wrapper=document.createElement('div');
@@ -204,14 +208,16 @@
       label.className='control-label';
       label.textContent='Буквы';
       const slider=document.createElement('input');
-      slider.type='range'; slider.min='0'; slider.max='4'; slider.step='1'; slider.value='0';
+      slider.type='range'; slider.min='0'; slider.max='5'; slider.step='1'; slider.value='1';
       const ticks=document.createElement('div');
       ticks.className='speed-ticks';
-      ['А,О','А,О,У','А,О,У,Ы','А,О,У,Ы,И','А,О,У,Ы,И,Э'].forEach(txt=>{
-        const s=document.createElement('span'); s.textContent=txt; s.style.fontSize='0.62rem'; ticks.appendChild(s);
+      ALL_VOWELS.forEach(v=>{
+        const s=document.createElement('span'); s.textContent=v; ticks.appendChild(s);
       });
       slider.addEventListener('input', function(){
-        level=Number(slider.value);
+        let v=Number(slider.value);
+        if(v<1){ v=1; slider.value='1'; }
+        level=v;
         if(Interactive.active) tick(false);
       });
       wrapper.append(label, slider, ticks);
@@ -226,7 +232,7 @@
         [palmL,palmR].forEach(c=>{ const l=c.querySelector('.palm-letter'); if(l) l.textContent=''; });
       },
       setupControls: function(startCol, endCol){
-        createVowelSlider(startCol);
+        createVowelSlider(endCol);
       },
       methodica:
         '<p>Красные пустые ладошки (контур) — внутри появляются гласные А, О, У, Ы, И, Э.</p>' +

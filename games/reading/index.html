@@ -36,12 +36,17 @@
     const WORDS4 = ['Сова','Пони','Ноты','Луна','Лапа','Маки','Муха','Мыло','Лиса'];
     const WORDS5 = ['Сумка','Шапка','Палка','Соска','Тапки','Шишка','Мишка','Носки','Тыква'];
     let mode = 3; // 3|4|5
+    let lastWord = '';
     const wordEl=document.getElementById('word');
     function tick(silent){
       const st=document.querySelector('.read-stage');
       triggerChangeAnimation(st, silent);
       let list = mode===3? WORDS3 : mode===4? WORDS4 : WORDS5;
-      wordEl.textContent = randomItem(list);
+      let w = randomItem(list);
+      let attempts=0;
+      while(w===lastWord && attempts<10){ w=randomItem(list); attempts++; }
+      lastWord=w;
+      wordEl.textContent = w;
     }
     function createReadControl(container){
       const wrapper=document.createElement('div');

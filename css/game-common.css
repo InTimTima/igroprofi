@@ -236,6 +236,10 @@ input[type='range']::-moz-range-thumb {
   gap: 0.55rem;
 }
 
+.speed-row + .speed-ticks {
+  margin-left: calc(40px + 0.55rem);
+}
+
 .pause-btn {
   width: 40px;
   height: 40px;
