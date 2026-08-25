@@ -604,6 +604,14 @@ function ensureAuthModals() {
     };
   });
 
+  var donateBtn = document.getElementById('donate-btn');
+  if (donateBtn) {
+    donateBtn.textContent = at('donateBtn');
+    donateBtn.onclick = function () {
+      if (typeof openDonateModal === 'function') openDonateModal();
+    };
+  }
+
   fillAuthTexts();
 }
 
