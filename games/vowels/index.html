@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Гласные ладошки — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .vowels-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      width: 100%;
+      height: 100%;
+      padding: 6.2rem 1rem 1rem;
+      overflow: auto;
+    }
+    .palms {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4%;
+      width: min(100%, 560px);
+    }
+    .palm {
+      position: relative;
+      width: 46%;
+      aspect-ratio: 595 / 740;
+      max-width: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    .palm svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .palm-letter {
+      position: relative;
+      z-index: 2;
+      font-size: min(18vw, 72px);
+      line-height: 1;
+      color: #E53935;
+      font-weight: 800;
+      user-select: none;
+      text-transform: uppercase;
+    }
+    .triples {
+      width: min(100%, 680px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      align-items: center;
+    }
+    .triple-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: clamp(14px, 2.2vw, 20px);
+      line-height: 1.2;
+      font-weight: 800;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    .triple-row img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      flex: none;
+    }
+    .triple {
+      letter-spacing: 0.04em;
+    }
+    .triple-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #FDD835;
+      flex: none;
+    }
+    .vowel-slider .control-group {
+      min-width: 220px;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+  <div class="game">
+    <div class="game__stage" id="stage">
+      <div class="vowels-stage" id="vowels-stage">
+        <div class="palms" id="palms">
+          <div class="palm" id="palm-left"></div>
+          <div class="palm" id="palm-right"></div>
+        </div>
+        <div class="triples" id="triples"></div>
+      </div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const ALL_VOWELS = ['А','О','У','Ы','И','Э'];
+    const LEVELS = [
+      ['А','О'],
+      ['А','О','У'],
+      ['А','О','У','Ы'],
+      ['А','О','У','Ы','И'],
+      ['А','О','У','Ы','И','Э'],
+    ];
+    let level = 0;
+    const palmL = document.getElementById('palm-left');
+    const palmR = document.getElementById('palm-right');
+    const triplesEl = document.getElementById('triples');
+
+    function paintPalmOutline(container) {
+      const isLeft = container.id === 'palm-left';
+      const url = isLeft ? '../../assets/hands/hand-left.svg' : '../../assets/hands/hand-right.svg';
+      return loadAsset(url).then(function(text){
+        container.innerHTML = text;
+        const svg = container.querySelector('svg');
+        if (!svg) return;
+        svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+        svg.style.width='100%'; svg.style.height='100%'; svg.style.overflow='visible';
+        svg.querySelectorAll('style').forEach(s=>s.remove());
+        svg.querySelectorAll('path').forEach(p=>{
+          p.setAttribute('fill','none');
+          p.setAttribute('stroke','#E53935');
+          p.setAttribute('stroke-width','14');
+          p.setAttribute('stroke-linejoin','round');
+          p.setAttribute('stroke-linecap','round');
+        });
+        // keep letter on top
+        const letter = container.querySelector('.palm-letter');
+        if (letter) container.appendChild(letter);
+      });
+    }
+    function ensurePalmLetters() {
+      [palmL,palmR].forEach(c=>{
+        if (!c.querySelector('.palm-letter')) {
+          const s=document.createElement('span');
+          s.className='palm-letter';
+          c.appendChild(s);
+        }
+      });
+      if (!palmL.dataset.outlined) {
+        palmL.dataset.outlined='1';
+        palmR.dataset.outlined='1';
+        paintPalmOutline(palmL);
+        paintPalmOutline(palmR);
+      }
+    }
+    function randomTriple(letters) {
+      let s='';
+      for(let i=0;i<3;i++) s+= randomItem(letters);
+      return s;
+    }
+    function renderTriples(letters) {
+      triplesEl.innerHTML='';
+      for(let r=0;r<2;r++){
+        const row=document.createElement('div');
+        row.className='triple-row';
+        const logo=document.createElement('img');
+        logo.src='../../assets/logo/logo.svg';
+        logo.alt='mosya';
+        row.appendChild(logo);
+        for(let t=0;t<3;t++){
+          const triple=document.createElement('span');
+          triple.className='triple';
+          triple.textContent=randomTriple(letters);
+          row.appendChild(triple);
+          if(t<2){
+            const dot=document.createElement('span');
+            dot.className='triple-dot';
+            row.appendChild(dot);
+          }
+        }
+        triplesEl.appendChild(row);
+      }
+    }
+    function tick(silent){
+      const stage=document.getElementById('vowels-stage');
+      triggerChangeAnimation(stage, silent);
+      ensurePalmLetters();
+      const letters = LEVELS[level];
+      const a = randomItem(letters);
+      const b = randomItem(letters);
+      palmL.querySelector('.palm-letter').textContent = a;
+      palmR.querySelector('.palm-letter').textContent = b;
+      renderTriples(letters);
+    }
+    function createVowelSlider(container){
+      const wrapper=document.createElement('div');
+      wrapper.className='control-group vowel-slider';
+      const label=document.createElement('label');
+      label.className='control-label';
+      label.textContent='Буквы';
+      const slider=document.createElement('input');
+      slider.type='range'; slider.min='0'; slider.max='4'; slider.step='1'; slider.value='0';
+      const ticks=document.createElement('div');
+      ticks.className='speed-ticks';
+      ['А,О','А,О,У','А,О,У,Ы','А,О,У,Ы,И','А,О,У,Ы,И,Э'].forEach(txt=>{
+        const s=document.createElement('span'); s.textContent=txt; s.style.fontSize='0.62rem'; ticks.appendChild(s);
+      });
+      slider.addEventListener('input', function(){
+        level=Number(slider.value);
+        if(Interactive.active) tick(false);
+      });
+      wrapper.append(label, slider, ticks);
+      container.appendChild(wrapper);
+    }
+    mountGameShell({
+      gameId: 'vowels',
+      titleKey: 'vowels',
+      tick: tick,
+      reset: function(){
+        triplesEl.innerHTML='';
+        [palmL,palmR].forEach(c=>{ const l=c.querySelector('.palm-letter'); if(l) l.textContent=''; });
+      },
+      setupControls: function(startCol, endCol){
+        createVowelSlider(startCol);
+      },
+      methodica:
+        '<p>Красные пустые ладошки (контур) — внутри появляются гласные А, О, У, Ы, И, Э.</p>' +
+        '<ul>' +
+        '<li>Ползунком добавляйте буквы: А,О → А,О,У → ... → все 6 гласных.</li>' +
+        '<li>Просите ребёнка назвать букву в каждой ладошке и показать соответствующую карточку.</li>' +
+        '<li>Ниже — два ряда троек: первый элемент — логотип, далее 3 тройки через жёлтый шарик. Читайте тройки вслух.</li>' +
+        '<li>Генерируйте случайные сочетания и просите ребёнка прочитать тройку, показать буквы на ковре.</li>' +
+        '</ul>',
+    });
+  </script>
+</body>
+</html>

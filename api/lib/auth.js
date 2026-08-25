@@ -12,6 +12,7 @@ const PLAN_DAYS = {
   month: 30,
   halfYear: 183,
   year: 365,
+  forever: null,
 };
 
 function isAdmin(user) {
@@ -112,6 +113,13 @@ async function requireUser(req) {
 // Активация подписки в базе (вызывается после подтверждённого платежа).
 // Идемпотентно: продление тарифа от текущей даты или от конца активной подписки.
 async function activateSubscription(userId, plan) {
+  if (plan === 'forever') {
+    await db.update('users', db.eq('id', userId), {
+      subscription: 'forever',
+      expires_at: null,
+    });
+    return;
+  }
   const days = PLAN_DAYS[plan];
   if (!days) return;
   const rows = await db.select('users', db.eq('id', userId));

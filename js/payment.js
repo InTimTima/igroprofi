@@ -3,6 +3,7 @@ const PLANS = {
   month: { price: '400', labelKey: 'planMonth', descKey: 'monthDesc', benefitKey: 'monthBenefit' },
   halfYear: { price: '2 500', labelKey: 'planHalfYear', descKey: 'halfYearDesc', benefitKey: 'halfYearBenefit' },
   year: { price: '4 000', labelKey: 'planYear', descKey: 'yearDesc', benefitKey: 'yearBenefit' },
+  forever: { price: '7 500', labelKey: 'planForever', descKey: 'foreverDesc', benefitKey: 'foreverBenefit' },
 };
 
 const PAY_I18N = {

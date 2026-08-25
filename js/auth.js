@@ -80,8 +80,9 @@ const Auth = {
     const user = this._user;
     if (!user || !user.subscription) return false;
     if (user.subscription === 'forever') return true;
-    const paidPlans = ['twoWeeks', 'month', 'halfYear', 'year'];
+    const paidPlans = ['twoWeeks', 'month', 'halfYear', 'year', 'forever'];
     if (paidPlans.indexOf(user.subscription) !== -1) {
+      if (user.subscription === 'forever') return true;
       if (!user.expiresAt || user.expiresAt <= Date.now()) return false;
       return true;
     }
@@ -217,10 +218,12 @@ const AUTH_I18N = {
     buyMonth: 'Месяц — 400 ₽',
     buyHalfYear: 'Полгода — 2 500 ₽',
     buyYear: 'Год — 4 000 ₽',
+    buyForever: 'Навсегда — 7 500 ₽',
     renewTwoWeeks: 'Продлить 2 недели — 250 ₽',
     renewMonth: 'Продлить месяц — 400 ₽',
     renewHalfYear: 'Продлить полгода — 2 500 ₽',
     renewYear: 'Продлить год — 4 000 ₽',
+    renewForever: 'Навсегда — 7 500 ₽',
     lockedHint: 'Доступно по подписке',
     lockedToast: 'Этот интерактив доступен только с подпиской',
     loginShort: 'Логин от 3 символов',
@@ -258,10 +261,12 @@ const AUTH_I18N = {
     buyMonth: '1 month — 400 ₽',
     buyHalfYear: '6 months — 2,500 ₽',
     buyYear: '1 year — 4,000 ₽',
+    buyForever: 'Forever — 7,500 ₽',
     renewTwoWeeks: 'Renew 2 weeks — 250 ₽',
     renewMonth: 'Renew month — 400 ₽',
     renewHalfYear: 'Renew 6 months — 2,500 ₽',
     renewYear: 'Renew year — 4,000 ₽',
+    renewForever: 'Forever — 7,500 ₽',
     lockedHint: 'Subscription required',
     lockedToast: 'This activity is available with a subscription only',
     loginShort: 'Login must be at least 3 characters',
@@ -467,6 +472,7 @@ function refreshHomeAuthUI() {
     ['month', 'month', 'buyMonth', 'renewMonth'],
     ['halfyear', 'halfYear', 'buyHalfYear', 'renewHalfYear'],
     ['year', 'year', 'buyYear', 'renewYear'],
+    ['forever', 'forever', 'buyForever', 'renewForever'],
   ];
   const user = Auth.getCurrentUser();
   plans.forEach(function (entry) {
@@ -514,7 +520,8 @@ function ensureAuthModals() {
       '<button type="button" class="auth-primary" id="buy-twoweeks"></button>' +
       '<button type="button" class="auth-primary" id="buy-month"></button>' +
       '<button type="button" class="auth-primary" id="buy-halfyear"></button>' +
-      '<button type="button" class="auth-primary auth-primary--alt" id="buy-year"></button>' +
+      '<button type="button" class="auth-primary" id="buy-year"></button>' +
+      '<button type="button" class="auth-primary auth-primary--alt" id="buy-forever"></button>' +
       '<button type="button" class="auth-link" id="profile-logout"></button>' +
       '</div>';
     document.body.appendChild(drawer);
@@ -586,7 +593,7 @@ function ensureAuthModals() {
     closeProfileDrawer();
     refreshHomeAuthUI();
   };
-  [['twoweeks', 'twoWeeks'], ['month', 'month'], ['halfyear', 'halfYear'], ['year', 'year']].forEach(function (entry) {
+  [['twoweeks', 'twoWeeks'], ['month', 'month'], ['halfyear', 'halfYear'], ['year', 'year'], ['forever', 'forever']].forEach(function (entry) {
     document.getElementById('buy-' + entry[0]).onclick = function () {
       if (typeof openPaymentModal === 'function') {
         openPaymentModal(entry[1]);

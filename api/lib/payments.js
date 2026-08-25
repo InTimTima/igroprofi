@@ -8,6 +8,7 @@ const PRICES = {
   month: '400.00',
   halfYear: '2500.00',
   year: '4000.00',
+  forever: '7500.00',
 };
 
 const DESCRIPTIONS = {
@@ -15,6 +16,7 @@ const DESCRIPTIONS = {
   month: 'Подписка igroprofi — 1 месяц',
   halfYear: 'Подписка igroprofi — полгода',
   year: 'Подписка igroprofi — 1 год',
+  forever: 'Подписка igroprofi — навсегда',
 };
 
 function config() {

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чтение — igroprofi</title>
+  <link rel="stylesheet" href="../../css/game-common.css">
+  <style>
+    .read-stage {
+      display:flex; align-items:center; justify-content:center;
+      width:100%; height:100%; padding:6.5rem 1rem 1rem;
+    }
+    .read-word {
+      font-size: min(18vw, 88px);
+      font-weight: 800;
+      color: var(--text);
+      line-height:1;
+      user-select:none;
+      text-align:center;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="../../index.html">← Назад</a>
+  <div class="game">
+    <div class="game__stage" id="stage">
+      <div class="read-stage"><div class="read-word" id="word"></div></div>
+    </div>
+    <div class="game__controls" id="controls"></div>
+  </div>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/shared.js"></script>
+  <script>
+    const WORDS3 = ['Кот','Кит','Дом','Мак','Нос','Зуб','Сок','Суп','Дым'];
+    const WORDS4 = ['Сова','Пони','Ноты','Луна','Лапа','Маки','Муха','Мыло','Лиса'];
+    const WORDS5 = ['Сумка','Шапка','Палка','Соска','Тапки','Шишка','Мишка','Носки','Тыква'];
+    let mode = 3; // 3|4|5
+    const wordEl=document.getElementById('word');
+    function tick(silent){
+      const st=document.querySelector('.read-stage');
+      triggerChangeAnimation(st, silent);
+      let list = mode===3? WORDS3 : mode===4? WORDS4 : WORDS5;
+      wordEl.textContent = randomItem(list);
+    }
+    function createReadControl(container){
+      const wrapper=document.createElement('div');
+      wrapper.className='control-group';
+      const label=document.createElement('label');
+      label.className='control-label';
+      label.textContent='Длина слова';
+      const slider=document.createElement('input');
+      slider.type='range'; slider.min='0'; slider.max='2'; slider.step='1'; slider.value='0';
+      const ticks=document.createElement('div');
+      ticks.className='speed-ticks';
+      const keys=['read3','read4','read5'];
+      keys.forEach(k=>{
+        const s=document.createElement('span');
+        s.textContent = typeof t==='function' ? t(k) : k;
+        ticks.appendChild(s);
+      });
+      slider.addEventListener('input', function(){
+        const v=Number(slider.value);
+        mode = v===0?3: v===1?4:5;
+        if(Interactive.active) tick(false);
+      });
+      wrapper.append(label, slider, ticks);
+      container.appendChild(wrapper);
+    }
+    mountGameShell({
+      gameId: 'reading',
+      titleKey: 'reading',
+      tick: tick,
+      reset: function(){ wordEl.textContent=''; },
+      setupControls: function(startCol,endCol){
+        createReadControl(endCol);
+      },
+      methodica:
+        '<p>На экране по очереди появляются простые слова.</p>' +
+        '<ul>' +
+        '<li>3 буквы: Кот, Кит, Дом, Мак, Нос, Зуб, Сок, Суп, Дым</li>' +
+        '<li>4 буквы: Сова, Пони, Ноты, Луна, Лапа, Маки, Муха, Мыло, Лиса</li>' +
+        '<li>5 букв: Сумка, Шапка, Палка, Соска, Тапки, Шишка, Мишка, Носки, Тыква</li>' +
+        '<li>Просите ребёнка прочитать слово, найти картинку, составить из букв.</li>' +
+        '</ul>',
+    });
+  </script>
+</body>
+</html>
