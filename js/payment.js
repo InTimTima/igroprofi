@@ -146,7 +146,6 @@ function ensurePaymentModal() {
 
   const agree = document.getElementById('pay-agree');
   agree.addEventListener('change', function () {
-    document.getElementById('pay-submit').disabled = !agree.checked;
     const err = document.getElementById('pay-error');
     if (agree.checked) {
       err.hidden = true;
@@ -217,7 +216,6 @@ function setPaymentStep(step) {
   if (step === 'choose') {
     const agree = document.getElementById('pay-agree');
     agree.checked = false;
-    document.getElementById('pay-submit').disabled = true;
   }
 }
 
@@ -344,7 +342,6 @@ function ensureDonateModal(){
   document.getElementById('donate-close').onclick=closeDonateModal;
   modal.addEventListener('click', function(e){ if(e.target===modal) closeDonateModal(); });
   document.getElementById('donate-agree').addEventListener('change', function(){
-    document.getElementById('donate-submit').disabled=!this.checked;
     var err=document.getElementById('donate-error'); err.hidden=true; err.textContent='';
   });
   document.getElementById('donate-submit').onclick=submitDonate;
@@ -369,7 +366,6 @@ function openDonateModal(){
   ensureDonateModal(); fillDonateTexts();
   var err=document.getElementById('donate-error'); if(err){ err.hidden=true; err.textContent=''; }
   var agree=document.getElementById('donate-agree'); if(agree) agree.checked=false;
-  var sub=document.getElementById('donate-submit'); if(sub) sub.disabled=true;
   var amt=document.getElementById('donate-amount'); if(amt) amt.value='';
   showEl(document.getElementById('donate-modal'));
 }
