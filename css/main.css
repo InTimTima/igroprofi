@@ -303,8 +303,8 @@ body {
 }
 
 .preview-quads--gap {
-  gap: 8px;
-  padding: 8px;
+  gap: 5px;
+  padding: 5px;
   background: var(--sea);
   border-radius: 10px;
   overflow: hidden;

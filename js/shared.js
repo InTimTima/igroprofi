@@ -32,6 +32,7 @@ const I18N = {
     methodicaClose: 'Закрыть',
     methodicaStub: 'Скоро здесь будет методичка. Здесь появится подробное описание, как использовать этот интерактив: идеи занятий, подсказки педагогу и примеры упражнений.',
     speed: 'Скорость',
+    settings: 'Настройки',
     start: 'Старт',
     stop: 'Стоп',
     pause: 'Пауза',
@@ -151,6 +152,7 @@ const I18N = {
     methodicaClose: 'Close',
     methodicaStub: 'The guide will be here soon. This section will explain how to use this activity: lesson ideas, tips for teachers and exercise examples.',
     speed: 'Speed',
+    settings: 'Settings',
     start: 'Start',
     stop: 'Stop',
     pause: 'Pause',
@@ -879,11 +881,20 @@ async function mountGameShell(options) {
     }
   }
 
-  if (!document.querySelector('.game-logo')) {
-    const logo = document.createElement('div');
+  if (!document.querySelector('.game-brand')) {
+    const brand = document.createElement('div');
+    brand.className = 'game-brand';
+    const logo = document.createElement('span');
     logo.className = 'game-logo';
     logo.textContent = 'igroprofi';
-    document.body.appendChild(logo);
+    brand.appendChild(logo);
+    if (options.titleKey) {
+      const title = document.createElement('span');
+      title.className = 'game-title';
+      title.textContent = t(options.titleKey);
+      brand.appendChild(title);
+    }
+    document.body.appendChild(brand);
   }
 
   if (!document.querySelector('.method-btn')) {
@@ -934,18 +945,51 @@ async function mountGameShell(options) {
 
   const controls = document.getElementById('controls');
   controls.innerHTML = '';
+
+  const settingsWrap = document.createElement('div');
+  settingsWrap.className = 'controls-settings';
+
+  const panel = document.createElement('div');
+  panel.className = 'controls-panel';
+  panel.hidden = true;
+
   const startCol = document.createElement('div');
   startCol.className = 'controls-start';
+  const endCol = document.createElement('div');
+  endCol.className = 'controls-end';
+  panel.append(startCol, endCol);
+
+  const bar = document.createElement('div');
+  bar.className = 'controls-bar';
+
+  const settingsBtn = document.createElement('button');
+  settingsBtn.type = 'button';
+  settingsBtn.className = 'settings-btn';
+  settingsBtn.textContent = t('settings');
+  settingsBtn.setAttribute('aria-expanded', 'false');
+
   const play = document.createElement('button');
   play.type = 'button';
   play.className = 'play-btn';
   play.textContent = t('start');
-  const endCol = document.createElement('div');
-  endCol.className = 'controls-end';
-  controls.append(startCol, play, endCol);
+
+  bar.append(settingsBtn, play);
+  settingsWrap.append(panel, bar);
+  controls.appendChild(settingsWrap);
+
   Interactive.playBtn = play;
+  Interactive.settingsBtn = settingsBtn;
+  Interactive.settingsPanel = panel;
+
   createSpeedControl(startCol);
   if (typeof options.setupControls === 'function') options.setupControls(startCol, endCol);
+
+  settingsBtn.addEventListener('click', () => {
+    const open = panel.hidden;
+    panel.hidden = !open;
+    settingsBtn.classList.toggle('is-open', open);
+    settingsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
 
   play.addEventListener('click', () => {
     if (isBusy()) userStop();

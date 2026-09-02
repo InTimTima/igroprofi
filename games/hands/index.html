@@ -28,6 +28,18 @@
     .hands-container.dual .hand {
       max-width: 36%;
     }
+
+    @media (max-width: 760px) {
+      .hand {
+        height: min(100%, calc(86% * 1.5));
+        max-height: 100%;
+        max-width: min(63%, calc(42% * 1.5));
+      }
+
+      .hands-container.dual .hand {
+        max-width: min(48%, calc(36% * 1.5));
+      }
+    }
   </style>
 </head>
 <body>

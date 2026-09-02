@@ -7,14 +7,8 @@
   <link rel="stylesheet" href="../../css/game-common.css">
   <style>
     #quads {
-      background: var(--sea);
-      gap: 8px;
-      padding: 8px;
       border-radius: 16px;
       overflow: hidden;
-    }
-    #quads .quad {
-      border-radius: 10px;
     }
   </style>
 </head>
@@ -39,6 +33,7 @@
     const stage = document.getElementById('stage');
     const quads = Array.from(document.querySelectorAll('.quad'));
     let count = 1;
+    let unique = false;
 
     function createCountControl(container) {
       const wrapper = document.createElement('div');
@@ -87,8 +82,9 @@
         quad.style.backgroundColor = '#ffffff';
       });
       const chosen = shuffle([0, 1, 2, 3]).slice(0, count);
-      chosen.forEach(function (index) {
-        quads[index].style.backgroundColor = IGRO_COLORS[randomColorKey()];
+      const colors = pickColors(count, unique);
+      chosen.forEach(function (index, i) {
+        quads[index].style.backgroundColor = IGRO_COLORS[colors[i]];
       });
     }
 
@@ -102,6 +98,15 @@
         });
       },
       setupControls: function (startCol, endCol) {
+        createPairSwitch(startCol, {
+          leftKey: 'colorsRepeat',
+          rightKey: 'colorsUnique',
+          checked: false,
+          onChange: function (checked) {
+            unique = checked;
+            if (Interactive.active) tick(false);
+          },
+        });
         createCountControl(endCol);
       },
       methodica:

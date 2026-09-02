@@ -92,6 +92,22 @@
     .vowel-slider .control-group {
       min-width: 220px;
     }
+
+    @media (max-width: 760px) {
+      .palm-letter {
+        font-size: min(12vw, 48px);
+      }
+      #palm-left .palm-letter { transform: translate(-28%, 40%); }
+      #palm-right .palm-letter { transform: translate(28%, 40%); }
+      .triples {
+        transform: translateY(-28px);
+        gap: 0.35rem;
+      }
+      .vowels-stage {
+        gap: 0.7rem;
+        padding: 5.2rem 0.75rem 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -112,127 +128,154 @@
   <script src="../../js/shared.js"></script>
   <script>
     const ALL_VOWELS = ['А','О','У','Ы','И','Э'];
-    let level = 1; // 1 => А,О ; 5 => all
+    let level = 1;
     const palmL = document.getElementById('palm-left');
     const palmR = document.getElementById('palm-right');
     const triplesEl = document.getElementById('triples');
+    let palmReady = null;
+
+    function ensureLetter(container) {
+      let letter = container.querySelector('.palm-letter');
+      if (!letter) {
+        letter = document.createElement('span');
+        letter.className = 'palm-letter';
+        container.appendChild(letter);
+      }
+      return letter;
+    }
 
     function paintPalmOutline(container) {
       const isLeft = container.id === 'palm-left';
       const url = isLeft ? '../../assets/hands/hand-left.svg' : '../../assets/hands/hand-right.svg';
-      return loadAsset(url).then(function(text){
+      const prevLetter = container.querySelector('.palm-letter');
+      const prevText = prevLetter ? prevLetter.textContent : '';
+      return loadAsset(url).then(function (text) {
         container.innerHTML = text;
         const svg = container.querySelector('svg');
-        if (!svg) return;
-        svg.setAttribute('preserveAspectRatio','xMidYMid meet');
-        svg.style.width='100%'; svg.style.height='100%'; svg.style.overflow='visible';
-        svg.querySelectorAll('style').forEach(s=>s.remove());
-        svg.querySelectorAll('path').forEach(p=>{
-          p.setAttribute('fill','none');
-          p.setAttribute('stroke','#E53935');
-          p.setAttribute('stroke-width','14');
-          p.setAttribute('stroke-linejoin','round');
-          p.setAttribute('stroke-linecap','round');
-        });
-        // keep letter on top
-        const letter = container.querySelector('.palm-letter');
-        if (letter) container.appendChild(letter);
-      });
-    }
-    function ensurePalmLetters() {
-      [palmL,palmR].forEach(c=>{
-        if (!c.querySelector('.palm-letter')) {
-          const s=document.createElement('span');
-          s.className='palm-letter';
-          c.appendChild(s);
+        if (svg) {
+          svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+          svg.style.width = '100%';
+          svg.style.height = '100%';
+          svg.style.overflow = 'visible';
+          svg.querySelectorAll('style').forEach(function (s) { s.remove(); });
+          svg.querySelectorAll('path').forEach(function (p) {
+            p.setAttribute('fill', 'none');
+            p.setAttribute('stroke', '#E53935');
+            p.setAttribute('stroke-width', '14');
+            p.setAttribute('stroke-linejoin', 'round');
+            p.setAttribute('stroke-linecap', 'round');
+          });
         }
+        const letter = ensureLetter(container);
+        if (prevText) letter.textContent = prevText;
       });
-      if (!palmL.dataset.outlined) {
-        palmL.dataset.outlined='1';
-        palmR.dataset.outlined='1';
-        paintPalmOutline(palmL);
-        paintPalmOutline(palmR);
-      }
     }
+
+    function ensurePalmsReady() {
+      if (!palmReady) {
+        palmReady = Promise.all([paintPalmOutline(palmL), paintPalmOutline(palmR)]);
+      }
+      return palmReady;
+    }
+
     function randomTriple(letters) {
-      let s='';
-      for(let i=0;i<3;i++) s+= randomItem(letters);
+      let s = '';
+      for (let i = 0; i < 3; i++) s += randomItem(letters);
       return s;
     }
+
     function renderTriples(letters) {
-      triplesEl.innerHTML='';
-      for(let r=0;r<2;r++){
-        const row=document.createElement('div');
-        row.className='triple-row';
-        const logo=document.createElement('img');
-        logo.src='../../assets/logo/logo.svg';
-        logo.alt='mosya';
+      triplesEl.innerHTML = '';
+      for (let r = 0; r < 2; r++) {
+        const row = document.createElement('div');
+        row.className = 'triple-row';
+        const logo = document.createElement('img');
+        logo.src = '../../assets/logo/logo.svg';
+        logo.alt = 'mosya';
         row.appendChild(logo);
-        for(let t=0;t<3;t++){
-          const triple=document.createElement('span');
-          triple.className='triple';
-          triple.textContent=randomTriple(letters);
+        for (let t = 0; t < 3; t++) {
+          const triple = document.createElement('span');
+          triple.className = 'triple';
+          triple.textContent = randomTriple(letters);
           row.appendChild(triple);
-          if(t<2){
-            const dot=document.createElement('span');
-            dot.className='triple-dot';
+          if (t < 2) {
+            const dot = document.createElement('span');
+            dot.className = 'triple-dot';
             row.appendChild(dot);
           }
         }
         triplesEl.appendChild(row);
       }
     }
-    function getActiveLetters(){
-      // level 1..5 inclusive, 1=>А,О up to 5=>all
-      return ALL_VOWELS.slice(0, level+1);
+
+    function getActiveLetters() {
+      return ALL_VOWELS.slice(0, level + 1);
     }
-    function tick(silent){
-      const stage=document.getElementById('vowels-stage');
+
+    function tick(silent) {
+      const stage = document.getElementById('vowels-stage');
       triggerChangeAnimation(stage, silent);
-      ensurePalmLetters();
       const letters = getActiveLetters();
       let a = randomItem(letters);
       let b = randomItem(letters);
-      // не могут повторяться
-      if(letters.length>1){
-        let attempts=0;
-        while(b===a && attempts<10){ b=randomItem(letters); attempts++; }
+      if (letters.length > 1) {
+        let attempts = 0;
+        while (b === a && attempts < 10) {
+          b = randomItem(letters);
+          attempts++;
+        }
       }
-      palmL.querySelector('.palm-letter').textContent = a;
-      palmR.querySelector('.palm-letter').textContent = b;
-      renderTriples([a,b]);
-    }
-    function createVowelSlider(container){
-      const wrapper=document.createElement('div');
-      wrapper.className='control-group vowel-slider';
-      const label=document.createElement('label');
-      label.className='control-label';
-      label.textContent='Буквы';
-      const slider=document.createElement('input');
-      slider.type='range'; slider.min='0'; slider.max='5'; slider.step='1'; slider.value='1';
-      const ticks=document.createElement('div');
-      ticks.className='speed-ticks';
-      ALL_VOWELS.forEach(v=>{
-        const s=document.createElement('span'); s.textContent=v; ticks.appendChild(s);
+      return ensurePalmsReady().then(function () {
+        ensureLetter(palmL).textContent = a;
+        ensureLetter(palmR).textContent = b;
+        renderTriples([a, b]);
       });
-      slider.addEventListener('input', function(){
-        let v=Number(slider.value);
-        if(v<1){ v=1; slider.value='1'; }
-        level=v;
-        if(Interactive.active) tick(false);
+    }
+
+    function createVowelSlider(container) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'control-group vowel-slider';
+      const label = document.createElement('label');
+      label.className = 'control-label';
+      label.textContent = 'Буквы';
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = '0';
+      slider.max = '5';
+      slider.step = '1';
+      slider.value = '1';
+      const ticks = document.createElement('div');
+      ticks.className = 'speed-ticks';
+      ALL_VOWELS.forEach(function (v) {
+        const s = document.createElement('span');
+        s.textContent = v;
+        ticks.appendChild(s);
+      });
+      slider.addEventListener('input', function () {
+        let v = Number(slider.value);
+        if (v < 1) {
+          v = 1;
+          slider.value = '1';
+        }
+        level = v;
+        if (Interactive.active) tick(false);
       });
       wrapper.append(label, slider, ticks);
       container.appendChild(wrapper);
     }
+
     mountGameShell({
       gameId: 'vowels',
       titleKey: 'vowels',
       tick: tick,
-      reset: function(){
-        triplesEl.innerHTML='';
-        [palmL,palmR].forEach(c=>{ const l=c.querySelector('.palm-letter'); if(l) l.textContent=''; });
+      reset: function () {
+        triplesEl.innerHTML = '';
+        [palmL, palmR].forEach(function (c) {
+          const l = c.querySelector('.palm-letter');
+          if (l) l.textContent = '';
+        });
       },
-      setupControls: function(startCol, endCol){
+      setupControls: function (startCol, endCol) {
         createVowelSlider(endCol);
       },
       methodica:
@@ -244,6 +287,8 @@
         '<li>Генерируйте случайные сочетания и просите ребёнка прочитать тройку, показать буквы на ковре.</li>' +
         '</ul>',
     });
+
+    ensurePalmsReady();
   </script>
 </body>
 </html>

@@ -10,84 +10,119 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       padding: 6.5rem 1rem 1rem;
     }
     .flash-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: min(6vw, 48px);
+      gap: min(4vw, 40px);
       width: 100%;
       max-width: 760px;
     }
     .flash-item {
       position: relative;
-      width: min(18vw, 110px);
-      height: min(18vw, 110px);
+      flex: 0 0 auto;
+      width: min(16vw, 110px);
+      aspect-ratio: 1 / 1;
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: min(10vw, 56px);
+      font-size: min(8vw, 48px);
       font-weight: 800;
       color: #333;
       z-index: 1;
       user-select: none;
     }
+    .flash-row[data-mode="digits"] .flash-item {
+      width: min(14vw, 96px);
+      font-size: min(9vw, 52px);
+    }
     .flash-item--active::before {
       content: '';
       position: absolute;
-      inset: -6px;
+      left: 50%;
+      top: 50%;
+      width: calc(100% + 12px);
+      height: calc(100% + 12px);
+      transform: translate(-50%, -50%);
       background: #FDD835;
       border-radius: 50%;
       z-index: -1;
       animation: flash-pop 0.35s ease;
     }
-    @keyframes flash-pop { 0%{transform:scale(0.7);opacity:0.6} 100%{transform:scale(1);opacity:1} }
+    @keyframes flash-pop {
+      0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0.6; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 760px) {
+      .flash-row {
+        gap: min(3.2vw, 18px);
+      }
+      .flash-item {
+        width: min(22vw, 88px);
+        font-size: min(9vw, 36px);
+      }
+      .flash-row[data-mode="digits"] .flash-item {
+        width: min(15vw, 64px);
+        font-size: min(8.5vw, 34px);
+      }
+    }
   </style>
 </head>
 <body>
   <a class="back-btn" href="../../index.html">← Назад</a>
   <div class="game">
     <div class="game__stage" id="stage">
-      <div class="flash-stage"><div class="flash-row" id="flash-row"></div></div>
+      <div class="flash-stage"><div class="flash-row" id="flash-row" data-mode="letters"></div></div>
     </div>
     <div class="game__controls" id="controls"></div>
   </div>
   <script src="../../js/auth.js"></script>
   <script src="../../js/shared.js"></script>
   <script>
-    const LETTERS = ['Л','ЛП','П'];
-    const DIGITS = ['1','2','3','4','5'];
-    let mode='letters';
-    const row=document.getElementById('flash-row');
-    function render(activeIndex){
-      row.innerHTML='';
-      const items = mode==='letters'? LETTERS : DIGITS;
-      items.forEach((txt,i)=>{
-        const d=document.createElement('div');
-        d.className='flash-item'+(i===activeIndex?' flash-item--active':'');
-        d.textContent=txt;
+    const LETTERS = ['Л', 'ЛП', 'П'];
+    const DIGITS = ['1', '2', '3', '4', '5'];
+    let mode = 'letters';
+    const row = document.getElementById('flash-row');
+
+    function render(activeIndex) {
+      row.innerHTML = '';
+      row.dataset.mode = mode;
+      const items = mode === 'letters' ? LETTERS : DIGITS;
+      items.forEach(function (txt, i) {
+        const d = document.createElement('div');
+        d.className = 'flash-item' + (i === activeIndex ? ' flash-item--active' : '');
+        d.textContent = txt;
         row.appendChild(d);
       });
     }
-    function tick(silent){
+
+    function tick(silent) {
       triggerChangeAnimation(row, silent);
-      const items = mode==='letters'? LETTERS : DIGITS;
-      const idx = randomInt(0, items.length-1);
+      const items = mode === 'letters' ? LETTERS : DIGITS;
+      const idx = randomInt(0, items.length - 1);
       render(idx);
     }
+
     mountGameShell({
       gameId: 'flashlight',
       titleKey: 'flashlight',
       tick: tick,
-      reset: function(){ row.innerHTML=''; },
-      setupControls: function(startCol,endCol){
+      reset: function () { row.innerHTML = ''; },
+      setupControls: function (startCol, endCol) {
         createPairSwitch(endCol, {
           leftKey: 'flashLetters',
           rightKey: 'flashDigits',
           checked: false,
-          onChange: function(checked){ mode = checked ? 'digits':'letters'; if(Interactive.active) tick(false); }
+          onChange: function (checked) {
+            mode = checked ? 'digits' : 'letters';
+            if (Interactive.active) tick(false);
+          },
         });
       },
       methodica:

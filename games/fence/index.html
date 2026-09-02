@@ -20,6 +20,16 @@
       display: block;
       overflow: visible;
     }
+
+    @media (max-width: 760px) {
+      .figure-box {
+        width: min(92%, 720px);
+        height: min(92%, 640px);
+        max-width: none;
+        max-height: 92%;
+        transform: scale(1);
+      }
+    }
   </style>
 </head>
 <body>
