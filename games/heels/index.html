@@ -26,8 +26,18 @@
       transition: transform 0.25s ease;
     }
 
+    .feet-container.dual {
+      justify-content: space-evenly;
+      gap: 0;
+      overflow: visible;
+    }
+
     .feet-container.dual .foot {
-      max-width: 43%;
+      max-width: 40%;
+      max-height: 48%;
+      height: 48%;
+      transform: scale(2);
+      transform-origin: center center;
     }
 
     @media (max-width: 760px) {
@@ -35,6 +45,7 @@
         height: auto;
         max-height: 78%;
         max-width: 58%;
+        transform: none;
       }
 
       .feet-container.dual {
@@ -42,14 +53,17 @@
         gap: 0;
         padding: 0;
         width: 100%;
+        overflow: visible;
       }
 
       .feet-container.dual .foot {
-        flex: 0 1 auto;
-        width: auto;
+        flex: 0 0 auto;
+        width: 36%;
         max-width: 36%;
-        max-height: 70%;
+        max-height: 48%;
         height: auto;
+        transform: scale(2);
+        transform-origin: center center;
       }
     }
   </style>
